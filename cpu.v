@@ -1,0 +1,2 @@
+module cpu(clock);
+endmodule
