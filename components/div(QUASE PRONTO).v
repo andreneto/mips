@@ -64,7 +64,7 @@ module Div(clk, reset, DivStart, dividendo, divisor, hi, lo, DivEnd, DivByZero);
 				end
 				Divisor = Divisor >> 1;//...........................................................Depois desloca o divisor pra esq pra ele acompanhar o dividendo
 				
-				if(counter == 5'd32) begin//..............................................Se o contador for maior que 32, quer dizer que ja realizou todas operacoes
+				if(counter == 5'd31) begin//..............................................Se o contador for maior que 32, quer dizer que ja realizou todas operacoes
 					Resto [63:32] = Resto [63:32] >> 1;//.................................Desloca o resto pra arrumar
 					DivEnd = 1;//.........................................................Flag do fim de divisao
 					 equalSinal = dividendoSinal ~^ divisorSinal;//.......................XNOR pra arrumar os sinais
@@ -81,7 +81,7 @@ module Div(clk, reset, DivStart, dividendo, divisor, hi, lo, DivEnd, DivByZero);
 				
 				end
 				
-				counter = counter + 1;//............................Incrementa o contador
+				counter = counter + 5'd1;//............................Incrementa o contador
 					
 			end
 		end
