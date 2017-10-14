@@ -27,16 +27,10 @@ always @(negedge clk) begin
 		mult_end <= 1'b0;
 	end
 	else if (~do_mult && mult_start) begin
-		if (B[31]==1'b1) begin
-			ADD <= { {32{~A[31]}}, {-A[31:0]} };
-			SUB <= { {32{A[31]}}, {A[31:0]} };
-			mult_control <= -B;
-		end
-		else begin
-			ADD <= { {32{A[31]}}, {A[31:0]} };
-			SUB <= { {32{~A[31]}}, {-A[31:0]} };
-			mult_control <= B;
-		end
+
+		ADD <= { {32{A[31]}}, {A[31:0]} };
+		SUB <= { {32{~A[31]}}, {-A[31:0]} };
+		mult_control <= B;
 		P <=  64'b0;
 		do_mult <= 1'b1;
 		mult_end <= 1'b0;
@@ -63,11 +57,11 @@ always @(negedge clk) begin
 			if (diff_bit!=mult_control[0]) begin
 
 				if (diff_bit) begin
+					{hi,lo} <= P + (ADD<<N);
 					P <= P + (ADD<<N);
-					{hi,lo} <= ADD<<N;
 				end
 				else begin
-					{hi,lo} <= SUB<<N;
+					{hi,lo} <= P + (SUB<<N);
 					P <= P + (SUB<<N);
 				end
 			end
