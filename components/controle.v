@@ -96,6 +96,12 @@ module controle (clock, reset, div_zero, opcode_inex, overflow, mult_ctrl, div_c
   parameter LOAD_WAIT = 6'h31;
   parameter LOAD_END = 6'h32;
   parameter STORE_WAIT = 6'h33;
+  parameter EXCEPTION = 6'h34;
+  parameter OVERFLOW = 6'h35;
+  parameter DIV_ZERO = 6'h36;
+  parameter OPCODE_INEX = 6'h37;
+  parameter EXCEPTION_WAIT = 6'h38;
+  parameter EXCEPTION_END = 6'h39;
 
   //OPCODE
   parameter OPCODE_R = 6'h0;
@@ -136,527 +142,576 @@ module controle (clock, reset, div_zero, opcode_inex, overflow, mult_ctrl, div_c
   parameter FUNCT_RTE = 6'h13;
 
   always @ (posedge clock)
-  begin: control
-    if (reset == 1'b1) begin
-      state <= RESET;
+    begin: control
+      if (reset == 1'b1) begin
+        state <= RESET;
+      end
+
+      if (overflow == 1'b1 || div_zero == 1'b1 || opcode_inex == 1'b1) begin
+        state <= EXCEPTION;
+      end
+
+      case (state)
+        RESET: begin
+          reg_dst <= 3'b100;
+          mem_to_reg <= 4'b0110;
+          reg_write <= 1'b1;
+          state <= FETCH;
+        end
+
+        FETCH: begin
+          iord <= 1'b0;
+          write_mem <= 1'b0;
+          ir_write <= 1'b1;
+          alu_srca <= 2'b00;
+          alu_srcb <= 2'b01;
+          alu_op <= 3'b001;
+          pc_src <= 3'b001;
+          pc_write <= 1'b1;
+          state <= FETCH_WAIT;
+        end
+
+        FETCH_WAIT: begin
+          state <= BRANCH;
+        end
+
+        BRANCH: begin
+          alu_srca <= 2'b00;
+          alu_srcb <= 2'b11;
+          alu_op <= 3'b001;
+          state <= EXCUTE;
+        end
+
+        EXCUTE: begin
+          case (opcode)
+            //R type instructions opcode
+            OPCODE_R: begin
+              case (funct)
+                FUNCT_ADD: begin
+                  state <= ADD;
+                end
+
+                FUNCT_AND: begin
+                  state <= AND;
+                end
+
+                FUNCT_SUB: begin
+                  state <= SUB;
+                end
+
+                FUNCT_DIV: begin
+                  state <= DIV;
+                end
+
+                FUNCT_MULT: begin
+                  state <= MULT;
+                end
+
+                FUNCT_MFHI: begin
+                  state <= MFHI;
+                end
+
+                FUNCT_MFLO: begin
+                  state <= MFLO;
+                end
+
+                FUNCT_JR: begin
+                  state <= JR;
+                end
+
+                FUNCT_BREAK: begin
+                  state <= BREAK;
+                end
+
+                FUNCT_RTE: begin
+                  state <= RTE;
+                end
+
+                FUNCT_SLL: begin
+                  state <= SLL;
+                end
+
+                FUNCT_SLLV: begin
+                  state <= SLLV;
+                end
+
+                FUNCT_SRA: begin
+                  state <= SRA;
+                end
+
+                FUNCT_SRAV: begin
+                  state <= SRAV;
+                end
+
+                FUNCT_SRL: begin
+                  state <= SRL;
+                end
+
+                FUNCT_SLT: begin
+                  state <= SLT;
+                end
+
+              endcase
+            end
+
+            // I type instructions opcode
+            OPCODE_ADDI: begin
+              state <= ADDI;
+            end
+
+            OPCODE_ADDIU: begin
+              state <= ADDIU;
+            end
+
+            OPCODE_LUI: begin
+              state <= LUI;
+            end
+
+            OPCODE_SLTI: begin
+              state <= ADDI;
+            end
+
+            OPCODE_BEQ: begin
+              state <= BEQ;
+            end
+
+            OPCODE_BNE: begin
+              state <= BNE;
+            end
+
+            OPCODE_BLE: begin
+              state <= BLE;
+            end
+
+            OPCODE_BGT: begin
+              state <= BGT;
+            end
+
+            OPCODE_BEQM: begin
+              state <= BEQM;
+            end
+
+            OPCODE_LB: begin
+              state <= LB;
+            end
+
+            OPCODE_LH: begin
+              state <= LH;
+            end
+
+            OPCODE_LW: begin
+              state <= LW;
+            end
+
+            OPCODE_SB: begin
+              state <= SB;
+            end
+
+            OPCODE_SH: begin
+              state <= SH;
+            end
+
+            OPCODE_SW: begin
+              state <= SW;
+            end
+
+            //J type instructions opcode
+            OPCODE_J: begin
+              state <= J;
+            end
+
+            OPCODE_JAL: begin
+              state <= JAL;
+            end
+
+          endcase
+        end
+
+        // R type instructions execute
+        ADD: begin
+          alu_srca <= 2'b01;
+          alu_srcb <= 2'b00;
+          alu_op <= 3'b001;
+          state <= ALU_EXECUTE;
+        end
+
+        AND: begin
+          alu_srca <= 2'b01;
+          alu_srcb <= 2'b00;
+          alu_op <= 3'b011;
+          state <= ALU_EXECUTE;
+        end
+
+        SUB: begin
+          alu_srca <= 2'b01;
+          alu_srcb <= 2'b00;
+          alu_op <= 3'b010;
+          state <= ALU_EXECUTE;
+        end
+
+        ALU_EXECUTE: begin
+          mem_to_reg <= 4'b0000;
+          reg_write <= 1'b1;
+          reg_dst <= 3'b001;
+          state <= FETCH;
+        end
+
+        DIV: begin
+          div_ctrl <= 1'b1;
+          state <= DIV_WAIT;
+        end
+
+        DIV_WAIT: begin
+          if (div_end == 1'b1) begin
+            state <= EXCUTE;
+          end else begin
+            state <= DIV_WAIT;
+          end
+        end
+
+        DIV_END: begin
+          hi_ctrl <= 1'b1;
+          lo_ctrl <= 1'b1;
+          state <= FETCH;
+        end
+
+        MULT: begin
+          mult_ctrl <= 1'b1;
+          state <= MULT_WAIT;
+        end
+
+        MULT_WAIT: begin
+          if (mult_end == 1'b1) begin
+            state <= MULT_END;
+          end else begin
+            state <= MULT_WAIT;
+          end
+        end
+
+        MULT_END: begin
+          hi_ctrl <= 1'b0;
+          lo_ctrl <= 1'b0;
+          state <= FETCH;
+        end
+
+        MFHI: begin
+          reg_dst <= 3'b001;
+          mem_to_reg <= 4'b0100;
+          reg_write <= 1'b1;
+          state <= FETCH;
+        end
+
+        MFLO: begin
+          reg_dst <= 3'b001;
+          mem_to_reg <= 4'b0101;
+          state <= FETCH;
+        end
+
+        MFLO: begin
+          reg_dst <= 3'b001;
+          mem_to_reg <= 4'b0101;
+          state <= FETCH;
+        end
+
+        JR: begin
+          pc_src <= 3'b100;
+          pc_write <= 1'b1;
+          state <= FETCH;
+        end
+
+        BREAK: begin
+          alu_srca <= 2'b00;
+          alu_srcb <= 2'b01;
+          alu_op <= 3'b010;
+          pc_src <= 3'b001;
+          pc_write <= 1'b1;
+          state <= FETCH;
+        end
+
+        RTE: begin
+          pc_src <= 3'b010;
+          pc_write <= 1'b1;
+          state <= FETCH;
+        end
+
+        SLL: begin
+          shift_srca <= 2'b01;
+          shift_srcb <= 2'b00;
+          shift <= 3'b010;
+          state <= SHIFT_END;
+        end
+
+        SLLV: begin
+          shift_srca <= 2'b00;
+          shift_srcb <= 2'b01;
+          shift <= 3'b010;
+          state <= SHIFT_END;
+        end
+
+        SRA: begin
+          shift_srca <= 2'b01;
+          shift_srcb <= 2'b00;
+          shift <= 3'b100;
+          state <= SHIFT_END;
+        end
+
+        SRAV: begin
+          shift_srca <= 2'b00;
+          shift_srcb <= 2'b01;
+          shift <= 3'b100;
+          state <= SHIFT_END;
+        end
+
+        SRL: begin
+          shift_srca <= 2'b01;
+          shift_srcb <= 2'b00;
+          shift <= 3'b011;
+          state <= SHIFT_END;
+        end
+
+        SHIFT_END: begin
+          mem_to_reg <= 4'b1010;
+          reg_dst <= 2'b01;
+          reg_write <= 1'b1;
+          state <= FETCH;
+        end
+
+        SLT: begin
+          alu_srca <= 2'b01;
+          alu_srcb <= 2'b00;
+          alu_op <= 3'b111;
+          state <= SLT_2;
+        end
+
+        SLT_2: begin
+          mem_to_reg <= 4'b0011;
+          reg_dst <= 2'b01;
+          reg_write <= 1'b1;
+          state <= FETCH;
+        end
+
+        //I type instructions execute
+        ADDI: begin
+          alu_srca <= 2'b01;
+          alu_srcb <= 2'b10;
+          alu_op <= 3'b001;
+          state <= IMEDIATE_END;
+        end
+
+        ADDIU: begin
+          alu_srca <= 2'b01;
+          alu_srcb <= 2'b10;
+          alu_op <= 3'b001;
+          state <= IMEDIATE_END;
+        end
+
+        LUI: begin
+          shift_srca <= 2'b10;
+          shift_srcb <= 2'b10;
+          shift <= 3'b010;
+          state <= IMEDIATE_END;
+        end
+
+        IMEDIATE_END: begin
+          mem_to_reg <= 4'b0000;
+          reg_dst <= 3'b000;
+          reg_write <= 1'b1;
+          state <= FETCH;
+        end
+
+        SLTI: begin
+          alu_srca <= 2'b01;
+          alu_srcb <= 2'b10;
+          alu_op <= 3'b111;
+          state <= SLTI_2;
+        end
+
+        SLTI_2: begin
+          mem_to_reg <= 4'b0011;
+          reg_dst <= 3'b000;
+          reg_write <= 1'b1;
+          state <= FETCH;
+        end
+
+        BEQ: begin
+          alu_srca <= 2'b01;
+          alu_srcb <= 2'b00;
+          alu_op <= 3'b010;
+          pc_src <= 3'b011;
+          branch_type <= 2'b10;
+          pc_write_cond <= 1'b1;
+          state <= FETCH;
+        end
+
+        BNE: begin
+          alu_srca <= 2'b01;
+          alu_srcb <= 2'b00;
+          alu_op <= 3'b010;
+          pc_src <= 3'b011;
+          branch_type <= 2'b11;
+          pc_write_cond <= 1'b1;
+          state <= FETCH;
+        end
+
+        BLE: begin
+          alu_srca <= 2'b01;
+          alu_srcb <= 2'b00;
+          alu_op <= 3'b111;
+          pc_src <= 3'b011;
+          branch_type <= 2'b00;
+          pc_write_cond <= 1'b1;
+          state <= FETCH;
+        end
+
+        BGT: begin
+          alu_srca <= 2'b01;
+          alu_srcb <= 2'b00;
+          alu_op <= 3'b111;
+          pc_src <= 3'b011;
+          branch_type <= 2'b01;
+          pc_write_cond <= 1'b1;
+          state <= FETCH;
+        end
+
+        BEQM: begin
+          iord <= 3'b001;
+          write_mem <= 1'b0;
+          load_type <= 2'b10;
+          state <= BEQM_WAIT;
+        end
+
+        BEQM_WAIT: begin
+          state <= BEQM_END;
+        end
+
+        BEQM_END: begin
+          alu_srca <= 2'b10;
+          alu_srcb <= 2'b00;
+          alu_op <= 3'b010;
+          pc_src <= 3'b011;
+          branch_type <= 2'b10;
+          pc_write_cond <= 1'b1;
+          state <= FETCH;
+        end
+
+        LB: begin
+          iord <= 3'b101;
+          write_mem <= 1'b0;
+          load_type <= 2'b00;
+          state <= LOAD_WAIT;
+        end
+
+        LH: begin
+          iord <= 3'b101;
+          write_mem <= 1'b0;
+          load_type <= 2'b01;
+          state <= LOAD_WAIT;
+        end
+
+        LW: begin
+          iord <= 3'b101;
+          write_mem <= 1'b0;
+          load_type <= 2'b10;
+          state <= LOAD_WAIT;
+        end
+
+        LOAD_WAIT: begin
+          state <= LOAD_END;
+        end
+
+        LOAD_END: begin
+          mem_to_reg <= 4'b0001;
+          reg_dst <= 3'b000;
+          reg_write <= 1'b1;
+          state <= FETCH;
+        end
+
+        SB: begin
+          iord <= 3'b101;
+          write_mem <= 1'b1;
+          store_type <= 2'b00;
+          state <= STORE_WAIT;
+        end
+
+        SH: begin
+          iord <= 3'b101;
+          write_mem <= 1'b1;
+          store_type <= 2'b01;
+          state <= STORE_WAIT;
+        end
+
+        SW: begin
+          iord <= 3'b101;
+          write_mem <= 1'b1;
+          store_type <= 2'b10;
+          state <= STORE_WAIT;
+        end
+
+        STORE_WAIT: begin
+          state <= FETCH;
+        end
+
+        //J type instructions execute
+        J: begin
+          pc_src <= 3'b101;
+          pc_write <= 1'b1;
+          state <= FETCH;
+        end
+
+        JAL: begin
+          mem_to_reg <= 4'b0010;
+          reg_dst <= 3'b010;
+          reg_write <= 1'b1;
+          pc_src <= 3'b101;
+          pc_write <= 1'b1;
+          state <= FETCH;
+        end
+
+        EXCEPTION: begin
+          alu_srca <= 2'b00;
+          alu_srcb <= 2'b01;
+          alu_op <= 3'b010;
+          epc_write <= 1'b1;
+          if(overflow == 1'b1) begin
+            state <= OVERFLOW;
+          end
+          if (div_zero == 1'b1) begin
+            state <= DIV_ZERO;
+          end
+          if (opcode_inex == 1'b1) begin
+            state <= OPCODE_INEX;
+          end
+        end
+
+        OVERFLOW: begin
+          iord <= 3'b010;
+          write_mem <= 1'b0;
+          state <= EXCEPTION_WAIT;
+        end
+
+        DIV_ZERO: begin
+          iord <= 3'b011;
+          write_mem <= 1'b0;
+          state <= EXCEPTION_WAIT;
+        end
+
+        OPCODE_INEX: begin
+          iord <= 3'b100;
+          write_mem <= 1'b0;
+          state <= EXCEPTION_WAIT;
+        end
+
+        EXCEPTION_WAIT: begin
+          state <= EXCEPTION_END;
+        end
+
+        EXCEPTION_END: begin
+          pc_src <= 3'b000;
+          pc_write <= 1'b1;
+          state <= FETCH;
+        end
+
+      endcase
     end
-    case (state)
-      RESET: begin
-        reg_dst <= 3'b100;
-        mem_to_reg <= 4'b0110;
-        reg_write <= 1'b1;
-        state <= FETCH;
-        end
-
-      FETCH: begin
-        iord <= 1'b0;
-        write_mem <= 1'b0;
-        ir_write <= 1'b1;
-        alu_srca <= 2'b00;
-        alu_srcb <= 2'b01;
-        alu_op <= 3'b001;
-        pc_src <= 3'b001;
-        pc_write <= 1'b1;
-        state <= FETCH_WAIT;
-        end
-
-      FETCH_WAIT: begin
-        state <= BRANCH;
-        end
-
-      BRANCH: begin
-        alu_srca <= 2'b00;
-        alu_srcb <= 2'b11;
-        alu_op <= 3'b001;
-        state <= EXCUTE;
-        end
-
-      EXCUTE: begin
-        case (opcode)
-          //R type instructions opcode
-          OPCODE_R: begin
-            case (funct)
-              FUNCT_ADD: begin
-		    		    state <= ADD;
-                end
-
-              FUNCT_AND: begin
-                state <= AND;
-                end
-
-              FUNCT_SUB: begin
-                state <= SUB;
-                end
-
-              FUNCT_DIV: begin
-                state <= DIV;
-                end
-
-              FUNCT_MULT: begin
-                state <= MULT;
-                end
-
-              FUNCT_MFHI: begin
-                state <= MFHI;
-                end
-
-              FUNCT_MFLO: begin
-                state <= MFLO;
-                end
-
-              FUNCT_JR: begin
-                state <= JR;
-                end
-
-              FUNCT_BREAK: begin
-                state <= BREAK;
-                end
-
-              FUNCT_RTE: begin
-                state <= RTE;
-                end
-
-              FUNCT_SLL: begin
-                state <= SLL;
-                end
-
-              FUNCT_SLLV: begin
-                state <= SLLV;
-                end
-
-              FUNCT_SRA: begin
-                state <= SRA;
-                end
-
-              FUNCT_SRAV: begin
-                state <= SRAV;
-                end
-
-              FUNCT_SRL: begin
-                state <= SRL;
-                end
-
-              FUNCT_SLT: begin
-                state <= SLT;
-                end
-
-	            endcase
-	          end
-
-          // I type instructions opcode
-          OPCODE_ADDI: begin
-            state <= ADDI;
-            end
-
-          OPCODE_ADDIU: begin
-            state <= ADDIU;
-            end
-
-          OPCODE_LUI: begin
-            state <= LUI;
-            end
-
-          OPCODE_SLTI: begin
-            state <= ADDI;
-            end
-
-          OPCODE_BEQ: begin
-            state <= BEQ;
-            end
-
-          OPCODE_BNE: begin
-            state <= BNE;
-            end
-
-          OPCODE_BLE: begin
-            state <= BLE;
-           end
-
-          OPCODE_BGT: begin
-            state <= BGT;
-            end
-
-          OPCODE_BEQM: begin
-            state <= BEQM;
-            end
-
-          OPCODE_LB: begin
-            state <= LB;
-            end
-
-          OPCODE_LH: begin
-            state <= LH;
-            end
-
-          OPCODE_LW: begin
-            state <= LW;
-            end
-
-          OPCODE_SB: begin
-            state <= SB;
-            end
-
-          OPCODE_SH: begin
-            state <= SH;
-            end
-
-          OPCODE_SW: begin
-            state <= SW;
-            end
-
-          //J type instructions opcode
-          OPCODE_J: begin
-            state <= J;
-            end
-
-          OPCODE_JAL: begin
-            state <= JAL;
-            end
-
-	        endcase
-	      end
-
-      // R type instructions execute
-      ADD: begin
-				alu_srca <= 2'b01;
-				alu_srcb <= 2'b00;
-        alu_op <= 3'b001;
-        state <= ALU_EXECUTE;
-        end
-
-      AND: begin
-				alu_srca <= 2'b01;
-				alu_srcb <= 2'b00;
-				alu_op <= 3'b011;
-				state <= ALU_EXECUTE;
-        end
-
-      SUB: begin
-        alu_srca <= 2'b01;
-        alu_srcb <= 2'b00;
-        alu_op <= 3'b010;
-        state <= ALU_EXECUTE;
-        end
-
-      ALU_EXECUTE: begin
-  	    mem_to_reg <= 4'b0000;
-        reg_write <= 1'b1;
-        reg_dst <= 3'b001;
-        state <= FETCH;
-        end
-
-      DIV: begin
-        div_ctrl <= 1'b1;
-        state <= DIV_WAIT;
-        end
-
-      DIV_WAIT: begin
-        if (div_end == 1'b1) begin
-	        state <= EXCUTE;
-        end else begin
-	        state <= DIV_WAIT;
-        end
-        end
-
-      DIV_END: begin
-        hi_ctrl <= 1'b1;
-        lo_ctrl <= 1'b1;
-        state <= FETCH;
-        end
-
-      MULT: begin
-        mult_ctrl <= 1'b1;
-        state <= MULT_WAIT;
-        end
-
-      MULT_WAIT: begin
-        if (mult_end == 1'b1) begin
-	        state <= MULT_END;
-        end else begin
-	        state <= MULT_WAIT;
-        end
-        end
-
-      MULT_END: begin
-        hi_ctrl <= 1'b0;
-        lo_ctrl <= 1'b0;
-        state <= FETCH;
-        end
-
-      MFHI: begin
-        reg_dst <= 3'b001;
-        mem_to_reg <= 4'b0100;
-        reg_write <= 1'b1;
-        state <= FETCH;
-        end
-
-      MFLO: begin
-        reg_dst <= 3'b001;
-        mem_to_reg <= 4'b0101;
-        state <= FETCH;
-        end
-
-      MFLO: begin
-        reg_dst <= 3'b001;
-        mem_to_reg <= 4'b0101;
-        state <= FETCH;
-        end
-
-      JR: begin
-        pc_src <= 3'b100;
-        pc_write <= 1'b1;
-        state <= FETCH;
-        end
-
-      BREAK: begin
-        alu_srca <= 2'b00;
-        alu_srcb <= 2'b01;
-        alu_op <= 3'b010;
-        pc_src <= 3'b001;
-        pc_write <= 1'b1;
-        state <= FETCH;
-        end
-
-      RTE: begin
-        pc_src <= 3'b010;
-        pc_write <= 1'b1;
-        state <= FETCH;
-        end
-
-      SLL: begin
-        shift_srca <= 2'b01;
-        shift_srcb <= 2'b00;
-        shift <= 3'b010;
-        state <= SHIFT_END;
-        end
-
-      SLLV: begin
-        shift_srca <= 2'b00;
-        shift_srcb <= 2'b01;
-        shift <= 3'b010;
-        state <= SHIFT_END;
-				end
-
-      SRA: begin
-        shift_srca <= 2'b01;
-        shift_srcb <= 2'b00;
-        shift <= 3'b100;
-        state <= SHIFT_END;
-				end
-
-      SRAV: begin
-        shift_srca <= 2'b00;
-        shift_srcb <= 2'b01;
-        shift <= 3'b100;
-        state <= SHIFT_END;
-				end
-
-      SRL: begin
-        shift_srca <= 2'b01;
-        shift_srcb <= 2'b00;
-        shift <= 3'b011;
-        state <= SHIFT_END;
-				end
-
-		  SHIFT_END: begin
-        mem_to_reg <= 4'b1010;
-        reg_dst <= 2'b01;
-        reg_write <= 1'b1;
-        state <= FETCH;
-				end
-
-			SLT: begin
-        alu_srca <= 2'b01;
-        alu_srcb <= 2'b00;
-        alu_op <= 3'b111;
-        state <= SLT_2;
-				end
-
-		  SLT_2: begin
-        mem_to_reg <= 4'b0011;
-        reg_dst <= 2'b01;
-        reg_write <= 1'b1;
-        state <= FETCH;
-				end
-
-		  //I type instructions execute
-      ADDI: begin
-        alu_srca <= 2'b01;
-        alu_srcb <= 2'b10;
-        alu_op <= 3'b001;
-        state <= IMEDIATE_END;
-				end
-
-		  ADDIU: begin
-        alu_srca <= 2'b01;
-        alu_srcb <= 2'b10;
-        alu_op <= 3'b001;
-        state <= IMEDIATE_END;
-				end
-
-      LUI: begin
-        shift_srca <= 2'b10;
-        shift_srcb <= 2'b10;
-        shift <= 3'b010;
-        state <= IMEDIATE_END;
-				end
-
-		  IMEDIATE_END: begin
-        mem_to_reg <= 4'b0000;
-				reg_dst <= 3'b000;
-				reg_write <= 1'b1;
-				state <= FETCH;
-			  end
-
-      SLTI: begin
-        alu_srca <= 2'b01;
-        alu_srcb <= 2'b10;
-        alu_op <= 3'b111;
-        state <= SLTI_2;
-		    end
-
-      SLTI_2: begin
-		    mem_to_reg <= 4'b0011;
-		    reg_dst <= 3'b000;
-		    reg_write <= 1'b1;
-		    state <= FETCH;
-				end
-
-      BEQ: begin
-			  alu_srca <= 2'b01;
-		    alu_srcb <= 2'b00;
-		    alu_op <= 3'b010;
-		    pc_src <= 3'b011;
-		    branch_type <= 2'b10;
-		    pc_write_cond <= 1'b1;
-		    state <= FETCH;
-				end
-
-      BNE: begin
-		    alu_srca <= 2'b01;
-		    alu_srcb <= 2'b00;
-		    alu_op <= 3'b010;
-		    pc_src <= 3'b011;
-		    branch_type <= 2'b11;
-		    pc_write_cond <= 1'b1;
-		    state <= FETCH;
-				end
-
-      BLE: begin
-			  alu_srca <= 2'b01;
-		    alu_srcb <= 2'b00;
-		    alu_op <= 3'b111;
-		    pc_src <= 3'b011;
-		    branch_type <= 2'b00;
-		    pc_write_cond <= 1'b1;
-		    state <= FETCH;
-				end
-
-      BGT: begin
-		    alu_srca <= 2'b01;
-		    alu_srcb <= 2'b00;
-		    alu_op <= 3'b111;
-		    pc_src <= 3'b011;
-		    branch_type <= 2'b01;
-		    pc_write_cond <= 1'b1;
-		    state <= FETCH;
-				end
-
-		  BEQM: begin
-		    iord <= 3'b001;
-		    write_mem <= 1'b0;
-		    load_type <= 2'b10;
-		    state <= BEQM_WAIT;
-				end
-
-		  BEQM_WAIT: begin
-		    state <= BEQM_END;
-				end
-
-		  BEQM_END: begin
-		    alu_srca <= 2'b10;
-		    alu_srcb <= 2'b00;
-		    alu_op <= 3'b010;
-		    pc_src <= 3'b011;
-		    branch_type <= 2'b10;
-		    pc_write_cond <= 1'b1;
-		    state <= FETCH;
-				end
-
-		  LB: begin
-		    iord <= 3'b101;
-		    write_mem <= 1'b0;
-		    load_type <= 2'b00;
-		    state <= LOAD_WAIT;
-				end
-
-		  LH: begin
-		    iord <= 3'b101;
-		    write_mem <= 1'b0;
-		    load_type <= 2'b01;
-		    state <= LOAD_WAIT;
-				end
-
-		  LW: begin
-		    iord <= 3'b101;
-		    write_mem <= 1'b0;
-		    load_type <= 2'b10;
-		    state <= LOAD_WAIT;
-		   	end
-
-		  LOAD_WAIT: begin
-		    state <= LOAD_END;
-				end
-
-		  LOAD_END: begin
-		    mem_to_reg <= 4'b0001;
-		    reg_dst <= 3'b000;
-		    reg_write <= 1'b1;
-		    state <= FETCH;
-				end
-
-		  SB: begin
-		    iord <= 3'b101;
-		    write_mem <= 1'b1;
-		    store_type <= 2'b00;
-		    state <= STORE_WAIT;
-				end
-
-		  SH: begin
-		    iord <= 3'b101;
-		    write_mem <= 1'b1;
-		    store_type <= 2'b01;
-		    state <= STORE_WAIT;
-				end
-
-		  SW: begin
-		    iord <= 3'b101;
-		    write_mem <= 1'b1;
-		    store_type <= 2'b10;
-		    state <= STORE_WAIT;
-				end
-
-		  STORE_WAIT: begin
-		    state <= FETCH;
-				end
-
-		  //J type instructions execute
-		  J: begin
-		    pc_src <= 3'b101;
-		    pc_write <= 1'b1;
-		    state <= FETCH;
-				end
-
-		  JAL: begin
-		    mem_to_reg <= 4'b0010;
-		    reg_dst <= 3'b010;
-		    reg_write <= 1'b1;
-		    pc_src <= 3'b101;
-		    pc_write <= 1'b1;
-		    state <= FETCH;
-				end
-
-		endcase
-	  end
-
+  end
 endmodule
