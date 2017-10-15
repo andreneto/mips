@@ -1,4 +1,4 @@
-module div(clk, rst, div_start, dividend, divisor, div_end, hi, lo, div_by_zero, quotient, divisor_acc, dividend_acc, N);
+module div(clk, rst, div_start, dividend, divisor, div_end, hi, lo, div_by_zero);
 
 input wire clk, rst, div_start;
 input wire signed [31:0] dividend, divisor;
@@ -6,9 +6,9 @@ output reg div_end, div_by_zero;
 output reg [31:0] hi, lo;
 
 //Helpers
-output reg signed [63:0] divisor_acc, dividend_acc;
-output reg signed [31:0] quotient;
-output reg [4:0] N;
+reg signed [63:0] divisor_acc, dividend_acc;
+reg signed [31:0] quotient;
+reg [4:0] N;
 reg do_div, diff_bit;
 
 initial begin
