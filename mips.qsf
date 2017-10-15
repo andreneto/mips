@@ -38,7 +38,8 @@
 
 set_global_assignment -name FAMILY "Stratix II"
 set_global_assignment -name DEVICE AUTO
-set_global_assignment -name TOP_LEVEL_ENTITY controle
+set_global_assignment -name TOP_LEVEL_ENTITY cpu
+
 set_global_assignment -name ORIGINAL_QUARTUS_VERSION "9.1 SP2"
 set_global_assignment -name PROJECT_CREATION_TIME_DATE "11:13:43  OCTOBER 08, 2017"
 set_global_assignment -name LAST_QUARTUS_VERSION "9.1 SP2"
@@ -47,6 +48,10 @@ set_global_assignment -name LL_ROOT_REGION ON -entity mips -section_id "Root Reg
 set_global_assignment -name LL_MEMBER_STATE LOCKED -entity mips -section_id "Root Region"
 set_global_assignment -name SIMULATION_MODE FUNCTIONAL
 set_global_assignment -name VERILOG_FILE components/controle.v
+set_global_assignment -name INCREMENTAL_VECTOR_INPUT_SOURCE waveforms/div.vwf
+set_global_assignment -name VERILOG_FILE components/Extend1to32.v
+set_global_assignment -name VERILOG_FILE components/Extend8to32.v
+set_global_assignment -name VERILOG_FILE components/ShiftLeft2.v
 set_global_assignment -name VERILOG_FILE components/div.v
 set_global_assignment -name VERILOG_FILE components/SignExtend16to32.v
 set_global_assignment -name VHDL_FILE components/Banco_reg.vhd
