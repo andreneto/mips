@@ -1,4 +1,4 @@
-module mult(clk, rst, mult_start, mult_end, A, B, hi, lo, P);
+module mult(clk, rst, mult_start, mult_end, A, B, hi, lo);
 
 input wire clk, rst, mult_start;
 input wire signed [31:0] A, B;
@@ -6,8 +6,7 @@ output reg [31:0] hi, lo;
 output reg mult_end;
 
 // Helpers
-output reg signed [63:0] P;
-reg signed [63:0] ADD, SUB;
+reg signed [63:0] ADD, SUB, P;
 reg [31:0] mult_control;
 reg [4:0] N;
 reg diff_bit, do_mult;
