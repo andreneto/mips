@@ -1,4 +1,4 @@
-module controle (clock, reset, div_zero, opcode_inex, overflow, mult_ctrl, div_ctrl, ir_write, reg_write, write_mem, epc_write, pc_write, pc_write_cond, hi_ctrl, lo_ctrl, load_type, store_type, branch_type, alu_srca, alu_srcb, shift_srca, shift_srcb, alu_op, iord, pc_src, reg_dst, shift, mem_to_reg, mult_end, div_end);
+module controle (clock, reset, div_zero, opcode_inex, overflow, mult_ctrl, div_ctrl, ir_write, reg_write, write_mem, epc_write, pc_write, pc_write_cond, hi_ctrl, lo_ctrl, load_type, store_type, branch_type, alu_srca, alu_srcb, shift_srca, shift_srcb, alu_op, iord, pc_src, reg_dst, shift, mem_to_reg, mult_end, div_end, funct, opcode);
 
   input wire [0:0] clock;
   input wire [0:0] reset;
@@ -8,8 +8,8 @@ module controle (clock, reset, div_zero, opcode_inex, overflow, mult_ctrl, div_c
   input wire [0:0] mult_end;
   input wire [0:0] div_end;
 
-  input reg [5:0] funct;
-  input reg [5:0] opcode;
+  input wire [5:0] funct;
+  input wire [5:0] opcode;
 
   output reg [0:0] mult_ctrl;
   output reg [0:0] div_ctrl;
@@ -713,5 +713,4 @@ module controle (clock, reset, div_zero, opcode_inex, overflow, mult_ctrl, div_c
 
       endcase
     end
-  end
 endmodule
