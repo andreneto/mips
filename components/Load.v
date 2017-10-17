@@ -1,4 +1,4 @@
-module load(mem_data, load_type, out_data);
+module Load(mem_data, load_type, out_data);
 
   input wire [1:0] load_type;
   input wire [31:0] mem_data;
