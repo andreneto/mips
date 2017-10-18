@@ -50,8 +50,8 @@ Registrador PC( .clk(clk), .reset(rst), .load(), .entrada(), .saida());
 mux8 IorD(.in_0(), .in_1(), .in_2(), .in_3(), .in_4(), .in_5(), .in_6(), .in_7(), .control(), .out());
 Memoria Mem(.address(), .clock(), .wr(), .datain(), .dataout());
 Extend8to32 ExceptionHandlerAddress( .in(), .out());
-// Load
-// Store
+Load LoadMem(.mem_data(), .load_type(), .out_data());
+Store StoreMem(.MemData(), .B(), .StoreType(), .data());
 Registrador MDR( .clk(clk), .reset(rst), .load(), .entrada(), .saida());
 
 Instr_Reg IR(.clk(), .reset(), .load_ir(), .entrada(), .instr31_26(), .instr25_21(), .instr20_16(), .instr15_0());
