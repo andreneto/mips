@@ -1,15 +1,15 @@
-module cpu(clk, rst);
+module cpu(clk, rst, state, out_PCSrc, out_PC, out_IorD, out_Mem, div_zero, overflow, mult_ctrl, div_ctrl, ir_write, reg_write, write_mem, epc_write, pc_write, pc_write_cond, hi_ctrl, lo_ctrl, mult_end, div_end, iord, pc_src, alu_op, shift, reg_dst, out_IR_31_26, out_ALU, out_AluSrcA, out_AluSrcB, out_RegDst);
 input wire clk, rst;
 
 
 //Sinais de 1 bit
-wire div_zero, opcode_inex, overflow, mult_ctrl, div_ctrl, ir_write, reg_write, write_mem, epc_write, pc_write, pc_write_cond, hi_ctrl, lo_ctrl, mult_end, div_end;
+output wire div_zero, overflow, mult_ctrl, div_ctrl, ir_write, reg_write, write_mem, epc_write, pc_write, pc_write_cond, hi_ctrl, lo_ctrl, mult_end, div_end;
 
 //Sinais de 2 bits
 wire [1:0] alu_srca, alu_srcb, branch_type, shift_srca, shift_srcb, store_type, load_type;
 
 //Sinais de 3 bits
-wire [2:0] iord, pc_src, alu_op, shift, reg_dst;
+output wire [2:0] iord, pc_src, alu_op, shift, reg_dst;
 
 //Sinais de 4 bits
 wire [3:0] mem_to_reg;
@@ -60,13 +60,19 @@ parameter REG_29 = 5'd29;
 parameter STACK_TOP_ADDRESS = 32'd227;
 parameter NULL = 0;
 
+//Debug
+
+output [4:0] out_RegDst;
+output wire [5:0] state, out_IR_31_26;
+output wire [31:0] out_PCSrc, out_PC, out_IorD, out_Mem, out_ALU, out_AluSrcA, out_AluSrcB;
+
 
 
 controle (
 	.clock(clk),  
 	.reset(rst), 
 	.div_zero(div_zero), 
-	.opcode_inex(opcode_inex), 
+	.state(state), 
 	.overflow(overflow), 
 	.mult_ctrl(mult_ctrl), 
 	.div_ctrl(div_ctrl), 
@@ -92,7 +98,9 @@ controle (
 	.shift(shift), 
 	.mem_to_reg(mem_to_reg),
 	.mult_end(mult_end), 
-	.div_end(div_end)
+	.div_end(div_end),
+	.opcode(out_IR_31_26),
+	.funct(out_IR_15_0[5:0])
 	); 
 
 
