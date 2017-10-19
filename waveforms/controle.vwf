@@ -852,6 +852,16 @@ SIGNAL("state[0]")
 	PARENT = "state";
 }
 
+SIGNAL("alu_op[2]")
+{
+	VALUE_TYPE = NINE_LEVEL_BIT;
+	SIGNAL_TYPE = SINGLE_BIT;
+	WIDTH = 1;
+	LSB_INDEX = -1;
+	DIRECTION = OUTPUT;
+	PARENT = "";
+}
+
 TRANSITION_LIST("alu_op[1]")
 {
 	NODE
@@ -1139,8 +1149,8 @@ TRANSITION_LIST("mem_to_reg[2]")
 	{
 		REPEAT = 1;
 		LEVEL 0 FOR 10.0;
-		LEVEL 1 FOR 50.0;
-		LEVEL 0 FOR 940.0;
+		LEVEL 1 FOR 10.0;
+		LEVEL 0 FOR 980.0;
 	}
 }
 
@@ -1150,8 +1160,8 @@ TRANSITION_LIST("mem_to_reg[1]")
 	{
 		REPEAT = 1;
 		LEVEL 0 FOR 10.0;
-		LEVEL 1 FOR 50.0;
-		LEVEL 0 FOR 940.0;
+		LEVEL 1 FOR 10.0;
+		LEVEL 0 FOR 980.0;
 	}
 }
 
@@ -1298,8 +1308,8 @@ TRANSITION_LIST("reg_dst[2]")
 	{
 		REPEAT = 1;
 		LEVEL 0 FOR 10.0;
-		LEVEL 1 FOR 50.0;
-		LEVEL 0 FOR 940.0;
+		LEVEL 1 FOR 10.0;
+		LEVEL 0 FOR 980.0;
 	}
 }
 
@@ -1327,7 +1337,14 @@ TRANSITION_LIST("reg_write")
 	{
 		REPEAT = 1;
 		LEVEL 0 FOR 10.0;
-		LEVEL 1 FOR 990.0;
+		NODE
+		{
+			REPEAT = 19;
+			LEVEL 1 FOR 10.0;
+			LEVEL 0 FOR 40.0;
+		}
+		LEVEL 1 FOR 10.0;
+		LEVEL 0 FOR 30.0;
 	}
 }
 
@@ -1524,6 +1541,15 @@ TRANSITION_LIST("state[0]")
 		}
 		LEVEL 0 FOR 20.0;
 		LEVEL 1 FOR 10.0;
+	}
+}
+
+TRANSITION_LIST("alu_op[2]")
+{
+	NODE
+	{
+		REPEAT = 1;
+		LEVEL 0 FOR 1000.0;
 	}
 }
 
@@ -2329,6 +2355,15 @@ DISPLAY_LINE
 	TREE_INDEX = 81;
 	TREE_LEVEL = 1;
 	PARENT = 75;
+}
+
+DISPLAY_LINE
+{
+	CHANNEL = "alu_op[2]";
+	EXPAND_STATUS = COLLAPSED;
+	RADIX = Binary;
+	TREE_INDEX = 82;
+	TREE_LEVEL = 0;
 }
 
 TIME_BAR

@@ -28,8 +28,8 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
   output reg [1:0] alu_srcb;
   output reg [1:0] shift_srca;
   output reg [1:0] shift_srcb;
-  output reg [1:0] alu_op;
 
+  output reg [2:0] alu_op;
   output reg [2:0] iord;
   output reg [2:0] pc_src;
   output reg [2:0] reg_dst;
@@ -163,6 +163,21 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
           alu_op <= 3'b001;
           pc_src <= 3'b001;
           pc_write <= 1'b1;
+          mult_ctrl <= 1'b0;
+          div_ctrl <= 1'b0;
+          reg_write <= 1'b0;
+          epc_write <= 1'b0;
+          pc_write_cond <= 1'b0;
+          hi_ctrl <= 1'b0;
+          lo_ctrl <= 1'b0;
+          load_type <= 2'b0;
+          store_type <= 2'b0;
+          branch_type <= 2'b0;
+          shift_srca <= 2'b0;
+          shift_srcb <= 2'b0;
+          reg_dst <= 3'b0;
+          shift <= 3'b0;
+          mem_to_reg <= 4'b0;
           state <= FETCH_WAIT;
         end
 
