@@ -790,6 +790,30 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
         end
 
         SLLV: begin
+          iord <= 1'b0;
+          write_mem <= 1'b0;
+          ir_write <= 1'b0;
+          alu_srca <= 2'b0;
+          alu_srcb <= 2'b0;
+          alu_op <= 3'b0;
+          pc_src <= 3'b0;
+          pc_write <= 1'b0;
+          mult_ctrl <= 1'b0;
+          div_ctrl <= 1'b0;
+          reg_write <= 1'b0;
+          epc_write <= 1'b0;
+          pc_write_cond <= 1'b0;
+          hi_ctrl <= 1'b0;
+          lo_ctrl <= 1'b0;
+          load_type <= 2'b0;
+          store_type <= 2'b0;
+          branch_type <= 2'b0;
+          reg_dst <= 3'b0;
+          mem_to_reg <= 4'b0;
+          shift_srca <= 2'b0;
+          shift_srcb <= 2'b0;
+          shift <= 3'b0;
+
           shift_srca <= 2'b00;
           shift_srcb <= 2'b01;
           shift <= 3'b010;
@@ -797,6 +821,30 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
         end
 
         SRA: begin
+          iord <= 1'b0;
+          write_mem <= 1'b0;
+          ir_write <= 1'b0;
+          alu_srca <= 2'b0;
+          alu_srcb <= 2'b0;
+          alu_op <= 3'b0;
+          pc_src <= 3'b0;
+          pc_write <= 1'b0;
+          mult_ctrl <= 1'b0;
+          div_ctrl <= 1'b0;
+          reg_write <= 1'b0;
+          epc_write <= 1'b0;
+          pc_write_cond <= 1'b0;
+          hi_ctrl <= 1'b0;
+          lo_ctrl <= 1'b0;
+          load_type <= 2'b0;
+          store_type <= 2'b0;
+          branch_type <= 2'b0;
+          reg_dst <= 3'b0;
+          mem_to_reg <= 4'b0;
+          shift_srca <= 2'b0;
+          shift_srcb <= 2'b0;
+          shift <= 3'b0;
+
           shift_srca <= 2'b01;
           shift_srcb <= 2'b00;
           shift <= 3'b100;
@@ -804,6 +852,30 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
         end
 
         SRAV: begin
+          iord <= 1'b0;
+          write_mem <= 1'b0;
+          ir_write <= 1'b0;
+          alu_srca <= 2'b0;
+          alu_srcb <= 2'b0;
+          alu_op <= 3'b0;
+          pc_src <= 3'b0;
+          pc_write <= 1'b0;
+          mult_ctrl <= 1'b0;
+          div_ctrl <= 1'b0;
+          reg_write <= 1'b0;
+          epc_write <= 1'b0;
+          pc_write_cond <= 1'b0;
+          hi_ctrl <= 1'b0;
+          lo_ctrl <= 1'b0;
+          load_type <= 2'b0;
+          store_type <= 2'b0;
+          branch_type <= 2'b0;
+          reg_dst <= 3'b0;
+          mem_to_reg <= 4'b0;
+          shift_srca <= 2'b0;
+          shift_srcb <= 2'b0;
+          shift <= 3'b0;
+
           shift_srca <= 2'b00;
           shift_srcb <= 2'b01;
           shift <= 3'b100;
@@ -811,6 +883,30 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
         end
 
         SRL: begin
+          iord <= 1'b0;
+          write_mem <= 1'b0;
+          ir_write <= 1'b0;
+          alu_srca <= 2'b0;
+          alu_srcb <= 2'b0;
+          alu_op <= 3'b0;
+          pc_src <= 3'b0;
+          pc_write <= 1'b0;
+          mult_ctrl <= 1'b0;
+          div_ctrl <= 1'b0;
+          reg_write <= 1'b0;
+          epc_write <= 1'b0;
+          pc_write_cond <= 1'b0;
+          hi_ctrl <= 1'b0;
+          lo_ctrl <= 1'b0;
+          load_type <= 2'b0;
+          store_type <= 2'b0;
+          branch_type <= 2'b0;
+          reg_dst <= 3'b0;
+          mem_to_reg <= 4'b0;
+          shift_srca <= 2'b0;
+          shift_srcb <= 2'b0;
+          shift <= 3'b0;
+
           shift_srca <= 2'b01;
           shift_srcb <= 2'b00;
           shift <= 3'b011;
@@ -818,13 +914,61 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
         end
 
         SHIFT_END: begin
+          iord <= 1'b0;
+          write_mem <= 1'b0;
+          ir_write <= 1'b0;
+          alu_srca <= 2'b0;
+          alu_srcb <= 2'b0;
+          alu_op <= 3'b0;
+          pc_src <= 3'b0;
+          pc_write <= 1'b0;
+          mult_ctrl <= 1'b0;
+          div_ctrl <= 1'b0;
+          reg_write <= 1'b0;
+          epc_write <= 1'b0;
+          pc_write_cond <= 1'b0;
+          hi_ctrl <= 1'b0;
+          lo_ctrl <= 1'b0;
+          load_type <= 2'b0;
+          store_type <= 2'b0;
+          branch_type <= 2'b0;
+          reg_dst <= 3'b0;
+          mem_to_reg <= 4'b0;
+          shift_srca <= 2'b0;
+          shift_srcb <= 2'b0;
+          shift <= 3'b0;
+
           mem_to_reg <= 4'b1010;
-          reg_dst <= 2'b01;
+          reg_dst <= 3'b01;
           reg_write <= 1'b1;
           state <= FETCH;
         end
 
         SLT: begin
+          iord <= 1'b0;
+          write_mem <= 1'b0;
+          ir_write <= 1'b0;
+          alu_srca <= 2'b0;
+          alu_srcb <= 2'b0;
+          alu_op <= 3'b0;
+          pc_src <= 3'b0;
+          pc_write <= 1'b0;
+          mult_ctrl <= 1'b0;
+          div_ctrl <= 1'b0;
+          reg_write <= 1'b0;
+          epc_write <= 1'b0;
+          pc_write_cond <= 1'b0;
+          hi_ctrl <= 1'b0;
+          lo_ctrl <= 1'b0;
+          load_type <= 2'b0;
+          store_type <= 2'b0;
+          branch_type <= 2'b0;
+          reg_dst <= 3'b0;
+          mem_to_reg <= 4'b0;
+          shift_srca <= 2'b0;
+          shift_srcb <= 2'b0;
+          shift <= 3'b0;
+
           alu_srca <= 2'b01;
           alu_srcb <= 2'b00;
           alu_op <= 3'b111;
@@ -832,8 +976,32 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
         end
 
         SLT_2: begin
+          iord <= 1'b0;
+          write_mem <= 1'b0;
+          ir_write <= 1'b0;
+          alu_srca <= 2'b0;
+          alu_srcb <= 2'b0;
+          alu_op <= 3'b0;
+          pc_src <= 3'b0;
+          pc_write <= 1'b0;
+          mult_ctrl <= 1'b0;
+          div_ctrl <= 1'b0;
+          reg_write <= 1'b0;
+          epc_write <= 1'b0;
+          pc_write_cond <= 1'b0;
+          hi_ctrl <= 1'b0;
+          lo_ctrl <= 1'b0;
+          load_type <= 2'b0;
+          store_type <= 2'b0;
+          branch_type <= 2'b0;
+          reg_dst <= 3'b0;
+          mem_to_reg <= 4'b0;
+          shift_srca <= 2'b0;
+          shift_srcb <= 2'b0;
+          shift <= 3'b0;
+
           mem_to_reg <= 4'b0011;
-          reg_dst <= 2'b01;
+          reg_dst <= 3'b01;
           reg_write <= 1'b1;
           state <= FETCH;
         end
@@ -1001,12 +1169,60 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
 
         //J type instructions execute
         J: begin
+          iord <= 1'b0;
+          write_mem <= 1'b0;
+          ir_write <= 1'b0;
+          alu_srca <= 2'b0;
+          alu_srcb <= 2'b0;
+          alu_op <= 3'b0;
+          pc_src <= 3'b0;
+          pc_write <= 1'b0;
+          mult_ctrl <= 1'b0;
+          div_ctrl <= 1'b0;
+          reg_write <= 1'b0;
+          epc_write <= 1'b0;
+          pc_write_cond <= 1'b0;
+          hi_ctrl <= 1'b0;
+          lo_ctrl <= 1'b0;
+          load_type <= 2'b0;
+          store_type <= 2'b0;
+          branch_type <= 2'b0;
+          reg_dst <= 3'b0;
+          mem_to_reg <= 4'b0;
+          shift_srca <= 2'b0;
+          shift_srcb <= 2'b0;
+          shift <= 3'b0;
+
           pc_src <= 3'b101;
           pc_write <= 1'b1;
           state <= FETCH;
         end
 
         JAL: begin
+          iord <= 1'b0;
+          write_mem <= 1'b0;
+          ir_write <= 1'b0;
+          alu_srca <= 2'b0;
+          alu_srcb <= 2'b0;
+          alu_op <= 3'b0;
+          pc_src <= 3'b0;
+          pc_write <= 1'b0;
+          mult_ctrl <= 1'b0;
+          div_ctrl <= 1'b0;
+          reg_write <= 1'b0;
+          epc_write <= 1'b0;
+          pc_write_cond <= 1'b0;
+          hi_ctrl <= 1'b0;
+          lo_ctrl <= 1'b0;
+          load_type <= 2'b0;
+          store_type <= 2'b0;
+          branch_type <= 2'b0;
+          reg_dst <= 3'b0;
+          mem_to_reg <= 4'b0;
+          shift_srca <= 2'b0;
+          shift_srcb <= 2'b0;
+          shift <= 3'b0;
+
           mem_to_reg <= 4'b0010;
           reg_dst <= 3'b010;
           reg_write <= 1'b1;
@@ -1016,6 +1232,30 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
         end
 
         EXCEPTION: begin
+          iord <= 1'b0;
+          write_mem <= 1'b0;
+          ir_write <= 1'b0;
+          alu_srca <= 2'b0;
+          alu_srcb <= 2'b0;
+          alu_op <= 3'b0;
+          pc_src <= 3'b0;
+          pc_write <= 1'b0;
+          mult_ctrl <= 1'b0;
+          div_ctrl <= 1'b0;
+          reg_write <= 1'b0;
+          epc_write <= 1'b0;
+          pc_write_cond <= 1'b0;
+          hi_ctrl <= 1'b0;
+          lo_ctrl <= 1'b0;
+          load_type <= 2'b0;
+          store_type <= 2'b0;
+          branch_type <= 2'b0;
+          reg_dst <= 3'b0;
+          mem_to_reg <= 4'b0;
+          shift_srca <= 2'b0;
+          shift_srcb <= 2'b0;
+          shift <= 3'b0;
+
           alu_srca <= 2'b00;
           alu_srcb <= 2'b01;
           alu_op <= 3'b010;
@@ -1032,12 +1272,60 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
         end
 
         OVERFLOW: begin
+          iord <= 1'b0;
+          write_mem <= 1'b0;
+          ir_write <= 1'b0;
+          alu_srca <= 2'b0;
+          alu_srcb <= 2'b0;
+          alu_op <= 3'b0;
+          pc_src <= 3'b0;
+          pc_write <= 1'b0;
+          mult_ctrl <= 1'b0;
+          div_ctrl <= 1'b0;
+          reg_write <= 1'b0;
+          epc_write <= 1'b0;
+          pc_write_cond <= 1'b0;
+          hi_ctrl <= 1'b0;
+          lo_ctrl <= 1'b0;
+          load_type <= 2'b0;
+          store_type <= 2'b0;
+          branch_type <= 2'b0;
+          reg_dst <= 3'b0;
+          mem_to_reg <= 4'b0;
+          shift_srca <= 2'b0;
+          shift_srcb <= 2'b0;
+          shift <= 3'b0;
+
           iord <= 3'b010;
           write_mem <= 1'b0;
           state <= EXCEPTION_WAIT;
         end
 
         DIV_ZERO: begin
+          iord <= 1'b0;
+          write_mem <= 1'b0;
+          ir_write <= 1'b0;
+          alu_srca <= 2'b0;
+          alu_srcb <= 2'b0;
+          alu_op <= 3'b0;
+          pc_src <= 3'b0;
+          pc_write <= 1'b0;
+          mult_ctrl <= 1'b0;
+          div_ctrl <= 1'b0;
+          reg_write <= 1'b0;
+          epc_write <= 1'b0;
+          pc_write_cond <= 1'b0;
+          hi_ctrl <= 1'b0;
+          lo_ctrl <= 1'b0;
+          load_type <= 2'b0;
+          store_type <= 2'b0;
+          branch_type <= 2'b0;
+          reg_dst <= 3'b0;
+          mem_to_reg <= 4'b0;
+          shift_srca <= 2'b0;
+          shift_srcb <= 2'b0;
+          shift <= 3'b0;
+
           iord <= 3'b011;
           write_mem <= 1'b0;
           state <= EXCEPTION_WAIT;
