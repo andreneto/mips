@@ -1,26 +1,25 @@
-module controle (clock, reset, div_zero, opcode_inex, overflow, mult_ctrl, div_ctrl, ir_write, reg_write, write_mem, epc_write, pc_write, pc_write_cond, hi_ctrl, lo_ctrl, load_type, store_type, branch_type, alu_srca, alu_srcb, shift_srca, shift_srcb, alu_op, iord, pc_src, reg_dst, shift, mem_to_reg, mult_end, div_end, funct, opcode);
+module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, ir_write, reg_write, write_mem, epc_write, pc_write, pc_write_cond, hi_ctrl, lo_ctrl, load_type, store_type, branch_type, alu_srca, alu_srcb, shift_srca, shift_srcb, alu_op, iord, pc_src, reg_dst, shift, mem_to_reg, mult_end, div_end, funct, opcode);
 
-  input wire [0:0] clock;
-  input wire [0:0] reset;
-  input wire [0:0] div_zero;
-  input wire [0:0] opcode_inex;
-  input wire [0:0] overflow;
-  input wire [0:0] mult_end;
-  input wire [0:0] div_end;
+  input wire clock;
+  input wire reset;
+  input wire div_zero;
+  input wire overflow;
+  input wire mult_end;
+  input wire div_end;
 
   input wire [5:0] funct;
   input wire [5:0] opcode;
 
-  output reg [0:0] mult_ctrl;
-  output reg [0:0] div_ctrl;
-  output reg [0:0] ir_write;
-  output reg [0:0] reg_write;
-  output reg [0:0] write_mem;
-  output reg [0:0] epc_write;
-  output reg [0:0] pc_write;
-  output reg [0:0] pc_write_cond;
-  output reg [0:0] hi_ctrl;
-  output reg [0:0] lo_ctrl;
+  output reg mult_ctrl;
+  output reg div_ctrl;
+  output reg ir_write;
+  output reg reg_write;
+  output reg write_mem;
+  output reg epc_write;
+  output reg pc_write;
+  output reg pc_write_cond;
+  output reg hi_ctrl;
+  output reg lo_ctrl;
 
   output reg [1:0] load_type;
   output reg [1:0] store_type;
@@ -38,14 +37,14 @@ module controle (clock, reset, div_zero, opcode_inex, overflow, mult_ctrl, div_c
 
   output reg [3:0] mem_to_reg;
 
-  reg [5:0] state;
+  reg opcode_inex;
+  output reg [5:0] state;
 
   //STATE
   parameter RESET = 6'h0;
   parameter FETCH = 6'h1;
   parameter FETCH_WAIT = 6'h2;
-  parameter BRANCH = 6'h3;
-  parameter EXCUTE = 6'h4;
+  parameter DECODE = 6'h4;
 
   parameter ADD = 6'h5;
   parameter AND = 6'h6;
@@ -141,23 +140,19 @@ module controle (clock, reset, div_zero, opcode_inex, overflow, mult_ctrl, div_c
   parameter FUNCT_BREAK = 6'hd;
   parameter FUNCT_RTE = 6'h13;
 
-  always @ (posedge clock)
+  always @ (negedge clock)
     begin: control
       if (reset == 1'b1) begin
-        state <= RESET;
+        reg_dst <= 3'b100;
+        mem_to_reg <= 4'b0110;
+        reg_write <= 1'b1;
+        state <= FETCH;
       end
-
-      if (overflow == 1'b1 || div_zero == 1'b1 || opcode_inex == 1'b1) begin
+      else if (overflow == 1'b1 || div_zero == 1'b1) begin
         state <= EXCEPTION;
-      end
-
-      case (state)
-        RESET: begin
-          reg_dst <= 3'b100;
-          mem_to_reg <= 4'b0110;
-          reg_write <= 1'b1;
-          state <= FETCH;
-        end
+      end 
+      else begin
+         case (state)
 
         FETCH: begin
           iord <= 1'b0;
@@ -172,17 +167,14 @@ module controle (clock, reset, div_zero, opcode_inex, overflow, mult_ctrl, div_c
         end
 
         FETCH_WAIT: begin
-          state <= BRANCH;
+          state <= DECODE;
         end
 
-        BRANCH: begin
+        DECODE: begin
           alu_srca <= 2'b00;
           alu_srcb <= 2'b11;
           alu_op <= 3'b001;
-          state <= EXCUTE;
-        end
-
-        EXCUTE: begin
+          state <= DECODE;
           case (opcode)
             //R type instructions opcode
             OPCODE_R: begin
@@ -249,6 +241,11 @@ module controle (clock, reset, div_zero, opcode_inex, overflow, mult_ctrl, div_c
 
                 FUNCT_SLT: begin
                   state <= SLT;
+                end
+
+                default: begin
+                  opcode_inex <= 1'b1;
+                  state <= EXCEPTION;
                 end
 
               endcase
@@ -324,6 +321,11 @@ module controle (clock, reset, div_zero, opcode_inex, overflow, mult_ctrl, div_c
               state <= JAL;
             end
 
+            default: begin
+              opcode_inex <= 1'b1;
+              state <= EXCEPTION;
+            end
+
           endcase
         end
 
@@ -363,7 +365,7 @@ module controle (clock, reset, div_zero, opcode_inex, overflow, mult_ctrl, div_c
 
         DIV_WAIT: begin
           if (div_end == 1'b1) begin
-            state <= EXCUTE;
+            state <= DIV_END;
           end else begin
             state <= DIV_WAIT;
           end
@@ -711,6 +713,14 @@ module controle (clock, reset, div_zero, opcode_inex, overflow, mult_ctrl, div_c
           state <= FETCH;
         end
 
+        default: begin
+          reg_dst <= 3'b100;
+          mem_to_reg <= 4'b0110;
+          reg_write <= 1'b1;
+          state <= FETCH;
+        end
+
       endcase
+      end 
     end
 endmodule
