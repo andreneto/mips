@@ -38,6 +38,7 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
   output reg [3:0] mem_to_reg;
 
   reg opcode_inex;
+  reg [5:0] wait_counter;
   output reg [5:0] state;
 
   //STATE
@@ -207,7 +208,17 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
         end
 
         FETCH_WAIT: begin
-          state <= DECODE;
+          ir_write <= 1'b1;
+          pc_write <= 1'b0;
+          reg_write <= 1'b0;
+          if (wait_counter==6'd1) begin
+            wait_counter=6'd0;
+            state <= DECODE;
+          end
+          else begin
+            wait_counter <= wait_counter + 1;
+          end
+          
         end
 
         DECODE: begin
@@ -1961,11 +1972,20 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
           reg_dst <= 3'b0;
           shift <= 3'b0;
           mem_to_reg <= 4'b0;
+
+
+          ir_write <= 1'b0;
+          alu_srca <= 2'b00;
+          alu_srcb <= 2'b01;
+          alu_op <= 3'b001;
+          pc_src <= 3'b001;
+          pc_write <= 1'b1;
+          
         
           reg_dst <= 3'b100;
           mem_to_reg <= 4'b0110;
           reg_write <= 1'b1;
-          state <= FETCH;
+          state <= FETCH_WAIT;
         end
 
       endcase
