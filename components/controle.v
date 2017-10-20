@@ -140,7 +140,7 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
   parameter FUNCT_BREAK = 6'hd;
   parameter FUNCT_RTE = 6'h13;
 
-  always @ (negedge clock)
+  always @ (posedge clock)
     begin: control
       if (reset == 1'b1) begin
         iord <= 1'b0;

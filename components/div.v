@@ -15,7 +15,7 @@ initial begin
 	do_div = 1'b0;
 end
 
-always @(negedge clk) begin
+always @(posedge clk) begin
 	if (rst) begin
 		do_div = 1'b0;
 	end

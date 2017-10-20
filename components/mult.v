@@ -18,7 +18,7 @@ initial begin
 	mult_end <= 0;
 end
 
-always @(negedge clk) begin
+always @(posedge clk) begin
 	if (rst) begin
 		N <= 5'd0;
 		P <= 64'd0;
