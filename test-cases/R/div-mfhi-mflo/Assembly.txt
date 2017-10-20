@@ -1,0 +1,8 @@
+7
+addi 1 0 8
+addi 2 0 4
+addi 3 0 0
+addi 4 0 0
+div 1 2
+mfhi 3
+mfhi 4

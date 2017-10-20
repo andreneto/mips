@@ -1,0 +1,36 @@
+27
+addi 1 0 2
+addi 2 0 3
+add 3 2 1
+
+addi 4 0 -2
+addi 5 0 -3
+add 6 5 4
+
+addi 10 0 2
+addi 11 0 -3
+add 12 11 10
+
+addi 13 0 5
+addi 14 0 3
+sub 15 14 13
+
+addi 16 0 3
+addi 17 0 5
+sub 18 17 16
+
+addi 19 0 -5
+addi 20 0 3
+sub 21 20 19
+
+addi 22 0 5
+addi 23 0 -3
+sub 24 23 22
+
+addi 25 0 -5
+addi 26 0 -3
+sub 27 26 25
+
+addi 28 0 23
+addi 29 0 52
+and 30 29 28
