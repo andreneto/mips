@@ -5,4 +5,4 @@ addi 3 0 0
 addi 4 0 0
 mult 1 2
 mfhi 3
-mfhi 4
+mflo 4
