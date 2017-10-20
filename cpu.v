@@ -1,4 +1,4 @@
-module cpu(clk, rst, state);
+module cpu(clk, rst, state, out_PCSrc, out_PC, out_Mem, out_AluSrcA, out_AluSrcB, out_ALU, div_zero, overflow, mult_ctrl, div_ctrl, ir_write, reg_write, write_mem, epc_write, pc_write, pc_write_cond, hi_ctrl, lo_ctrl, mult_end, div_end, alu_srca, alu_srcb, branch_type, shift_srca, shift_srcb, store_type, load_type, out_IR_31_26 );
 input wire clk, rst;
 
 
@@ -64,11 +64,18 @@ parameter NULL = 0;
 
 output wire [5:0] state;
 
+output wire [31:0] out_PCSrc, out_PC, out_Mem, out_AluSrcA, out_AluSrcB, out_ALU ;
+output wire div_zero, overflow, mult_ctrl, div_ctrl, ir_write, reg_write, write_mem, epc_write, pc_write, pc_write_cond, hi_ctrl, lo_ctrl, mult_end, div_end;
+output wire [1:0] alu_srca, alu_srcb, branch_type, shift_srca, shift_srcb, store_type, load_type;
+output wire [5:0] out_IR_31_26;
+
 
 
 controle (
 	.clock(clk),  
 	.reset(rst),
+	.opcode(out_IR_31_26),
+	.funct(out_IR_15_0[5:0]),
 	.state(state),
 	.div_zero(div_zero), 
 	.overflow(overflow), 
