@@ -1,4 +1,4 @@
-module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, ir_write, reg_write, write_mem, epc_write, pc_write, pc_write_cond, hi_ctrl, lo_ctrl, load_type, store_type, branch_type, alu_srca, alu_srcb, shift_srca, shift_srcb, alu_op, iord, pc_src, reg_dst, shift, mem_to_reg, mult_end, div_end, funct, opcode);
+module controle (next_state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, ir_write, reg_write, write_mem, epc_write, pc_write, pc_write_cond, hi_ctrl, lo_ctrl, load_type, store_type, branch_type, alu_srca, alu_srcb, shift_srca, shift_srcb, alu_op, iord, pc_src, reg_dst, shift, mem_to_reg, mult_end, div_end, funct, opcode);
 
   input wire clock;
   input wire reset;
@@ -39,9 +39,9 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
 
   reg opcode_inex;
   reg [5:0] wait_counter;
-  output reg [5:0] state;
+  output reg [5:0] next_state;
 
-  //STATE
+  //next_state
   parameter RESET = 6'h0;
   parameter FETCH = 6'h1;
   parameter FETCH_WAIT = 6'h2;
@@ -102,6 +102,7 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
   parameter OPCODE_INEX = 6'h37;
   parameter EXCEPTION_WAIT = 6'h38;
   parameter EXCEPTION_END = 6'h39;
+  parameter SHIFT_INIT = 6'h3A;
 
   //OPCODE
   parameter OPCODE_R = 6'h0;
@@ -172,23 +173,23 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
         reg_dst <= 3'b100;
         mem_to_reg <= 4'b0110;
         reg_write <= 1'b1;
-        state <= FETCH;
+        next_state <= FETCH;
       end
       else if (overflow == 1'b1 || div_zero == 1'b1) begin
-        state <= EXCEPTION;
+        next_state <= EXCEPTION;
       end 
       else begin
-         case (state)
+         case (next_state)
 
         FETCH: begin
           iord <= 1'b0;
           write_mem <= 1'b0;
-          ir_write <= 1'b1;
+          ir_write <= 1'b0;
           alu_srca <= 2'b00;
           alu_srcb <= 2'b01;
           alu_op <= 3'b001;
           pc_src <= 3'b001;
-          pc_write <= 1'b1;
+          pc_write <= 1'b0;
           mult_ctrl <= 1'b0;
           div_ctrl <= 1'b0;
           reg_write <= 1'b0;
@@ -204,21 +205,26 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
           reg_dst <= 3'b0;
           shift <= 3'b0;
           mem_to_reg <= 4'b0;
-          state <= FETCH_WAIT;
+          next_state <= FETCH_WAIT;
         end
 
         FETCH_WAIT: begin
-          ir_write <= 1'b1;
           pc_write <= 1'b0;
           reg_write <= 1'b0;
-          if (wait_counter==6'd1) begin
+          ir_write <= 1'b0;
+          
+           if(wait_counter==6'd2)begin
             wait_counter=6'd0;
-            state <= DECODE;
+            next_state <= DECODE;
+          end 
+          else if (wait_counter==6'd1) begin
+            ir_write <= 1'b1;
+            pc_write <= 1'b1;
+            wait_counter <= wait_counter +1;
           end
           else begin
             wait_counter <= wait_counter + 1;
-          end
-          
+          end  
         end
 
         DECODE: begin
@@ -256,72 +262,87 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
             OPCODE_R: begin
               case (funct)
                 FUNCT_ADD: begin
-                  state <= ADD;
+                  next_state <= ADD;
                 end
 
                 FUNCT_AND: begin
-                  state <= AND;
+                  next_state <= AND;
                 end
 
                 FUNCT_SUB: begin
-                  state <= SUB;
+                  next_state <= SUB;
                 end
 
                 FUNCT_DIV: begin
-                  state <= DIV;
+                  next_state <= DIV;
                 end
 
                 FUNCT_MULT: begin
-                  state <= MULT;
+                  next_state <= MULT;
                 end
 
                 FUNCT_MFHI: begin
-                  state <= MFHI;
+                  next_state <= MFHI;
                 end
 
                 FUNCT_MFLO: begin
-                  state <= MFLO;
+                  next_state <= MFLO;
                 end
 
                 FUNCT_JR: begin
-                  state <= JR;
+                  next_state <= JR;
                 end
 
                 FUNCT_BREAK: begin
-                  state <= BREAK;
+                  next_state <= BREAK;
                 end
 
                 FUNCT_RTE: begin
-                  state <= RTE;
+                  next_state <= RTE;
                 end
 
                 FUNCT_SLL: begin
-                  state <= SLL;
+                  shift_srca <= 2'b01;
+                  shift_srcb <= 2'b00;
+                  shift <= 001;
+                  next_state <= SHIFT_INIT;
                 end
 
                 FUNCT_SLLV: begin
-                  state <= SLLV;
+                  shift_srca <= 2'b00;
+                  shift_srcb <= 2'b01;
+                  shift <= 001;
+                  next_state <= SHIFT_INIT;
                 end
 
                 FUNCT_SRA: begin
-                  state <= SRA;
+                  next_state <= SHIFT_INIT;
+                  shift_srca <= 2'b01;
+                  shift_srcb <= 2'b00;
+                  shift <= 001;
                 end
 
                 FUNCT_SRAV: begin
-                  state <= SRAV;
+                  shift_srca <= 2'b00;
+                  shift_srcb <= 2'b01;
+                  shift <= 001;
+                  next_state <= SHIFT_INIT;
                 end
 
                 FUNCT_SRL: begin
-                  state <= SRL;
+                  shift_srca <= 2'b01;
+                  shift_srcb <= 2'b00;
+                  shift <= 001;
+                  next_state <= SHIFT_INIT;
                 end
 
                 FUNCT_SLT: begin
-                  state <= SLT;
+                  next_state <= SLT;
                 end
 
                 default: begin
                   opcode_inex <= 1'b1;
-                  state <= EXCEPTION;
+                  next_state <= EXCEPTION;
                 end
 
               endcase
@@ -329,77 +350,77 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
 
             // I type instructions opcode
             OPCODE_ADDI: begin
-              state <= ADDI;
+              next_state <= ADDI;
             end
 
             OPCODE_ADDIU: begin
-              state <= ADDIU;
+              next_state <= ADDIU;
             end
 
             OPCODE_LUI: begin
-              state <= LUI;
+              next_state <= LUI;
             end
 
             OPCODE_SLTI: begin
-              state <= ADDI;
+              next_state <= ADDI;
             end
 
             OPCODE_BEQ: begin
-              state <= BEQ;
+              next_state <= BEQ;
             end
 
             OPCODE_BNE: begin
-              state <= BNE;
+              next_state <= BNE;
             end
 
             OPCODE_BLE: begin
-              state <= BLE;
+              next_state <= BLE;
             end
 
             OPCODE_BGT: begin
-              state <= BGT;
+              next_state <= BGT;
             end
 
             OPCODE_BEQM: begin
-              state <= BEQM;
+              next_state <= BEQM;
             end
 
             OPCODE_LB: begin
-              state <= LB;
+              next_state <= LB;
             end
 
             OPCODE_LH: begin
-              state <= LH;
+              next_state <= LH;
             end
 
             OPCODE_LW: begin
-              state <= LW;
+              next_state <= LW;
             end
 
             OPCODE_SB: begin
-              state <= SB;
+              next_state <= SB;
             end
 
             OPCODE_SH: begin
-              state <= SH;
+              next_state <= SH;
             end
 
             OPCODE_SW: begin
-              state <= SW;
+              next_state <= SW;
             end
 
             //J type instructions opcode
             OPCODE_J: begin
-              state <= J;
+              next_state <= J;
             end
 
             OPCODE_JAL: begin
-              state <= JAL;
+              next_state <= JAL;
             end
 
             default: begin
               opcode_inex <= 1'b1;
-              state <= EXCEPTION;
+              next_state <= EXCEPTION;
             end
 
           endcase
@@ -435,7 +456,7 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
           alu_srca <= 2'b01;
           alu_srcb <= 2'b00;
           alu_op <= 3'b001;
-          state <= ALU_EXECUTE;
+          next_state <= ALU_EXECUTE;
         end
 
         AND: begin
@@ -468,7 +489,7 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
           alu_srca <= 2'b01;
           alu_srcb <= 2'b00;
           alu_op <= 3'b011;
-          state <= ALU_EXECUTE;
+          next_state <= ALU_EXECUTE;
         end
 
         SUB: begin
@@ -500,7 +521,7 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
           alu_srca <= 2'b01;
           alu_srcb <= 2'b00;
           alu_op <= 3'b010;
-          state <= ALU_EXECUTE;
+          next_state <= ALU_EXECUTE;
         end
 
         ALU_EXECUTE: begin
@@ -532,7 +553,7 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
           mem_to_reg <= 4'b0000;
           reg_write <= 1'b1;
           reg_dst <= 3'b001;
-          state <= FETCH;
+          next_state <= FETCH;
         end
 
         DIV: begin
@@ -562,14 +583,14 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
           mem_to_reg <= 4'b0;
 
           div_ctrl <= 1'b1;
-          state <= DIV_WAIT;
+          next_state <= DIV_WAIT;
         end
 
         DIV_WAIT: begin
           if (div_end == 1'b1) begin
-            state <= DIV_END;
+            next_state <= DIV_END;
           end else begin
-            state <= DIV_WAIT;
+            next_state <= DIV_WAIT;
           end
         end
 
@@ -601,7 +622,7 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
 
           hi_ctrl <= 1'b1;
           lo_ctrl <= 1'b1;
-          state <= FETCH;
+          next_state <= FETCH;
         end
 
         MULT: begin
@@ -631,14 +652,14 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
           mem_to_reg <= 4'b0;
 
           mult_ctrl <= 1'b1;
-          state <= MULT_WAIT;
+          next_state <= MULT_WAIT;
         end
 
         MULT_WAIT: begin
           if (mult_end == 1'b1) begin
-            state <= MULT_END;
+            next_state <= MULT_END;
           end else begin
-            state <= MULT_WAIT;
+            next_state <= MULT_WAIT;
           end
         end
 
@@ -670,7 +691,7 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
 
           hi_ctrl <= 1'b0;
           lo_ctrl <= 1'b0;
-          state <= FETCH;
+          next_state <= FETCH;
         end
 
         MFHI: begin
@@ -702,7 +723,7 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
           reg_dst <= 3'b001;
           mem_to_reg <= 4'b0100;
           reg_write <= 1'b1;
-          state <= FETCH;
+          next_state <= FETCH;
         end
 
         MFLO: begin
@@ -733,7 +754,7 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
 
           reg_dst <= 3'b001;
           mem_to_reg <= 4'b0101;
-          state <= FETCH;
+          next_state <= FETCH;
         end
 
         JR: begin
@@ -764,7 +785,7 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
 
           pc_src <= 3'b100;
           pc_write <= 1'b1;
-          state <= FETCH;
+          next_state <= FETCH;
         end
 
         BREAK: begin
@@ -798,7 +819,7 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
           alu_op <= 3'b010;
           pc_src <= 3'b001;
           pc_write <= 1'b1;
-          state <= FETCH;
+          next_state <= FETCH;
         end
 
         RTE: begin
@@ -829,7 +850,32 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
 
           pc_src <= 3'b010;
           pc_write <= 1'b1;
-          state <= FETCH;
+          next_state <= FETCH;
+        end
+
+        SHIFT_INIT: begin
+          shift <= 001;
+          case (funct) 
+            FUNCT_SLL: begin
+              next_state <= SLL;
+            end
+
+            FUNCT_SLLV: begin
+              next_state <= SLLV;
+            end
+
+            FUNCT_SRA: begin
+              next_state <= SRA;
+            end
+
+            FUNCT_SRAV: begin
+              next_state <= SRAV;
+            end
+
+            FUNCT_SRL: begin
+              next_state <= SRL;
+            end
+          endcase
         end
 
         SLL: begin
@@ -861,7 +907,7 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
           shift_srca <= 2'b01;
           shift_srcb <= 2'b00;
           shift <= 3'b010;
-          state <= SHIFT_END;
+          next_state <= SHIFT_END;
         end
 
         SLLV: begin
@@ -892,7 +938,7 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
           shift_srca <= 2'b00;
           shift_srcb <= 2'b01;
           shift <= 3'b010;
-          state <= SHIFT_END;
+          next_state <= SHIFT_END;
         end
 
         SRA: begin
@@ -923,7 +969,7 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
           shift_srca <= 2'b01;
           shift_srcb <= 2'b00;
           shift <= 3'b100;
-          state <= SHIFT_END;
+          next_state <= SHIFT_END;
         end
 
         SRAV: begin
@@ -954,7 +1000,7 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
           shift_srca <= 2'b00;
           shift_srcb <= 2'b01;
           shift <= 3'b100;
-          state <= SHIFT_END;
+          next_state <= SHIFT_END;
         end
 
         SRL: begin
@@ -985,7 +1031,7 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
           shift_srca <= 2'b01;
           shift_srcb <= 2'b00;
           shift <= 3'b011;
-          state <= SHIFT_END;
+          next_state <= SHIFT_END;
         end
 
         SHIFT_END: begin
@@ -1016,7 +1062,7 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
           mem_to_reg <= 4'b1010;
           reg_dst <= 3'b01;
           reg_write <= 1'b1;
-          state <= FETCH;
+          next_state <= FETCH;
         end
 
         SLT: begin
@@ -1047,7 +1093,7 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
           alu_srca <= 2'b01;
           alu_srcb <= 2'b00;
           alu_op <= 3'b111;
-          state <= SLT_2;
+          next_state <= SLT_2;
         end
 
         SLT_2: begin
@@ -1078,7 +1124,7 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
           mem_to_reg <= 4'b0011;
           reg_dst <= 3'b01;
           reg_write <= 1'b1;
-          state <= FETCH;
+          next_state <= FETCH;
         end
 
         //I type instructions execute
@@ -1111,7 +1157,7 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
           alu_srca <= 2'b01;
           alu_srcb <= 2'b10;
           alu_op <= 3'b001;
-          state <= IMEDIATE_END;
+          next_state <= IMEDIATE_END;
         end
 
         ADDIU: begin
@@ -1143,7 +1189,7 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
           alu_srca <= 2'b01;
           alu_srcb <= 2'b10;
           alu_op <= 3'b001;
-          state <= IMEDIATE_END;
+          next_state <= IMEDIATE_END;
         end
 
         LUI: begin
@@ -1175,7 +1221,7 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
           shift_srca <= 2'b10;
           shift_srcb <= 2'b10;
           shift <= 3'b010;
-          state <= IMEDIATE_END;
+          next_state <= IMEDIATE_END;
         end
 
         IMEDIATE_END: begin
@@ -1207,7 +1253,7 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
           mem_to_reg <= 4'b0000;
           reg_dst <= 3'b000;
           reg_write <= 1'b1;
-          state <= FETCH;
+          next_state <= FETCH;
         end
 
         SLTI: begin
@@ -1239,7 +1285,7 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
           alu_srca <= 2'b01;
           alu_srcb <= 2'b10;
           alu_op <= 3'b111;
-          state <= SLTI_2;
+          next_state <= SLTI_2;
         end
 
         SLTI_2: begin
@@ -1271,7 +1317,7 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
           mem_to_reg <= 4'b0011;
           reg_dst <= 3'b000;
           reg_write <= 1'b1;
-          state <= FETCH;
+          next_state <= FETCH;
         end
 
         BEQ: begin
@@ -1306,7 +1352,7 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
           pc_src <= 3'b011;
           branch_type <= 2'b10;
           pc_write_cond <= 1'b1;
-          state <= FETCH;
+          next_state <= FETCH;
         end
 
         BNE: begin
@@ -1341,7 +1387,7 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
           pc_src <= 3'b011;
           branch_type <= 2'b11;
           pc_write_cond <= 1'b1;
-          state <= FETCH;
+          next_state <= FETCH;
         end
 
         BLE: begin
@@ -1376,7 +1422,7 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
           pc_src <= 3'b011;
           branch_type <= 2'b00;
           pc_write_cond <= 1'b1;
-          state <= FETCH;
+          next_state <= FETCH;
         end
 
         BGT: begin
@@ -1411,7 +1457,7 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
           pc_src <= 3'b011;
           branch_type <= 2'b01;
           pc_write_cond <= 1'b1;
-          state <= FETCH;
+          next_state <= FETCH;
         end
 
         BEQM: begin
@@ -1443,11 +1489,11 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
           iord <= 3'b001;
           write_mem <= 1'b0;
           load_type <= 2'b10;
-          state <= BEQM_WAIT;
+          next_state <= BEQM_WAIT;
         end
 
         BEQM_WAIT: begin
-          state <= BEQM_END;
+          next_state <= BEQM_END;
         end
 
         BEQM_END: begin
@@ -1482,7 +1528,7 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
           pc_src <= 3'b011;
           branch_type <= 2'b10;
           pc_write_cond <= 1'b1;
-          state <= FETCH;
+          next_state <= FETCH;
         end
 
         LB: begin
@@ -1514,7 +1560,7 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
           iord <= 3'b101;
           write_mem <= 1'b0;
           load_type <= 2'b00;
-          state <= LOAD_WAIT;
+          next_state <= LOAD_WAIT;
         end
 
         LH: begin
@@ -1546,7 +1592,7 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
           iord <= 3'b101;
           write_mem <= 1'b0;
           load_type <= 2'b01;
-          state <= LOAD_WAIT;
+          next_state <= LOAD_WAIT;
         end
 
         LW: begin
@@ -1578,11 +1624,11 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
           iord <= 3'b101;
           write_mem <= 1'b0;
           load_type <= 2'b10;
-          state <= LOAD_WAIT;
+          next_state <= LOAD_WAIT;
         end
 
         LOAD_WAIT: begin
-          state <= LOAD_END;
+          next_state <= LOAD_END;
         end
 
         LOAD_END: begin
@@ -1614,7 +1660,7 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
           mem_to_reg <= 4'b0001;
           reg_dst <= 3'b000;
           reg_write <= 1'b1;
-          state <= FETCH;
+          next_state <= FETCH;
         end
 
         SB: begin
@@ -1646,7 +1692,7 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
           iord <= 3'b101;
           write_mem <= 1'b1;
           store_type <= 2'b00;
-          state <= STORE_WAIT;
+          next_state <= STORE_WAIT;
         end
 
         SH: begin
@@ -1678,7 +1724,7 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
           iord <= 3'b101;
           write_mem <= 1'b1;
           store_type <= 2'b01;
-          state <= STORE_WAIT;
+          next_state <= STORE_WAIT;
         end
 
         SW: begin
@@ -1710,11 +1756,11 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
           iord <= 3'b101;
           write_mem <= 1'b1;
           store_type <= 2'b10;
-          state <= STORE_WAIT;
+          next_state <= STORE_WAIT;
         end
 
         STORE_WAIT: begin
-          state <= FETCH;
+          next_state <= FETCH;
         end
 
         //J type instructions execute
@@ -1745,7 +1791,7 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
 
           pc_src <= 3'b101;
           pc_write <= 1'b1;
-          state <= FETCH;
+          next_state <= FETCH;
         end
 
         JAL: begin
@@ -1778,7 +1824,7 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
           reg_write <= 1'b1;
           pc_src <= 3'b101;
           pc_write <= 1'b1;
-          state <= FETCH;
+          next_state <= FETCH;
         end
 
         EXCEPTION: begin
@@ -1811,13 +1857,13 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
           alu_op <= 3'b010;
           epc_write <= 1'b1;
           if(overflow == 1'b1) begin
-            state <= OVERFLOW;
+            next_state <= OVERFLOW;
           end
           if (div_zero == 1'b1) begin
-            state <= DIV_ZERO;
+            next_state <= DIV_ZERO;
           end
           if (opcode_inex == 1'b1) begin
-            state <= OPCODE_INEX;
+            next_state <= OPCODE_INEX;
           end
         end
 
@@ -1848,7 +1894,7 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
 
           iord <= 3'b010;
           write_mem <= 1'b0;
-          state <= EXCEPTION_WAIT;
+          next_state <= EXCEPTION_WAIT;
         end
 
         DIV_ZERO: begin
@@ -1878,7 +1924,7 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
 
           iord <= 3'b011;
           write_mem <= 1'b0;
-          state <= EXCEPTION_WAIT;
+          next_state <= EXCEPTION_WAIT;
         end
 
         OPCODE_INEX: begin
@@ -1909,11 +1955,11 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
 
           iord <= 3'b100;
           write_mem <= 1'b0;
-          state <= EXCEPTION_WAIT;
+          next_state <= EXCEPTION_WAIT;
         end
 
         EXCEPTION_WAIT: begin
-          state <= EXCEPTION_END;
+          next_state <= EXCEPTION_END;
         end
 
         EXCEPTION_END: begin
@@ -1944,7 +1990,7 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
 
           pc_src <= 3'b000;
           pc_write <= 1'b1;
-          state <= FETCH;
+          next_state <= FETCH;
         end
 
         default: begin
@@ -1979,13 +2025,13 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
           alu_srcb <= 2'b01;
           alu_op <= 3'b001;
           pc_src <= 3'b001;
-          pc_write <= 1'b1;
+          pc_write <= 1'b0;
           
         
           reg_dst <= 3'b100;
           mem_to_reg <= 4'b0110;
           reg_write <= 1'b1;
-          state <= FETCH_WAIT;
+          next_state <= FETCH_WAIT;
         end
 
       endcase

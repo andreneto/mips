@@ -1,4 +1,4 @@
-module cpu(clk, rst, state, out_PCSrc, out_PC, out_Mem, out_AluSrcA, out_AluSrcB, out_ALU, div_zero, overflow, mult_ctrl, div_ctrl, ir_write, reg_write, write_mem, epc_write, pc_write, pc_write_cond, hi_ctrl, lo_ctrl, mult_end, div_end, alu_srca, alu_srcb, branch_type, shift_srca, shift_srcb, store_type, load_type, out_IR_31_26 );
+module cpu(out_IR_15_0,out_SignExtend16to32, clk, rst, next_state, out_PCSrc, out_PC, out_Mem, out_AluSrcA, out_AluSrcB, out_ALU, div_zero, overflow, mult_ctrl, div_ctrl, ir_write, reg_write, write_mem, epc_write, pc_write, pc_write_cond, hi_ctrl, lo_ctrl, mult_end, div_end, alu_srca, alu_srcb, branch_type, shift_srca, shift_srcb, store_type, load_type, out_IR_31_26 );
 input wire clk, rst;
 
 
@@ -62,12 +62,13 @@ parameter NULL = 0;
 
 // Debug
 
-output wire [5:0] state;
+output wire [5:0] next_state;
 
-output wire [31:0] out_PCSrc, out_PC, out_Mem, out_AluSrcA, out_AluSrcB, out_ALU ;
+output wire [31:0] out_PCSrc, out_PC, out_Mem, out_AluSrcA, out_AluSrcB, out_ALU, out_SignExtend16to32;
 output wire div_zero, overflow, mult_ctrl, div_ctrl, ir_write, reg_write, write_mem, epc_write, pc_write, pc_write_cond, hi_ctrl, lo_ctrl, mult_end, div_end;
 output wire [1:0] alu_srca, alu_srcb, branch_type, shift_srca, shift_srcb, store_type, load_type;
 output wire [5:0] out_IR_31_26;
+output wire [15:0] out_IR_15_0;
 
 
 
@@ -76,7 +77,7 @@ controle (
 	.reset(rst),
 	.opcode(out_IR_31_26),
 	.funct(out_IR_15_0[5:0]),
-	.state(state),
+	.next_state(next_state),
 	.div_zero(div_zero), 
 	.overflow(overflow), 
 	.mult_ctrl(mult_ctrl), 
