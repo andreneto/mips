@@ -1,0 +1,5 @@
+2
+addi 1 0 3
+addi 2 0 5
+slt 3 1 2
+slt 4 2 1
