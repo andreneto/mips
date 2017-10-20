@@ -1,9 +1,9 @@
-module cpu(clk, rst);
+module cpu(clk, rst, state);
 input wire clk, rst;
 
 
 //Sinais de 1 bit
-wire div_zero, opcode_inex, overflow, mult_ctrl, div_ctrl, ir_write, reg_write, write_mem, epc_write, pc_write, pc_write_cond, hi_ctrl, lo_ctrl, mult_end, div_end;
+wire div_zero, overflow, mult_ctrl, div_ctrl, ir_write, reg_write, write_mem, epc_write, pc_write, pc_write_cond, hi_ctrl, lo_ctrl, mult_end, div_end;
 
 //Sinais de 2 bits
 wire [1:0] alu_srca, alu_srcb, branch_type, shift_srca, shift_srcb, store_type, load_type;
@@ -60,13 +60,17 @@ parameter REG_29 = 5'd29;
 parameter STACK_TOP_ADDRESS = 32'd227;
 parameter NULL = 0;
 
+// Debug
+
+output wire [5:0] state;
+
 
 
 controle (
 	.clock(clk),  
-	.reset(rst), 
+	.reset(rst),
+	.state(state),
 	.div_zero(div_zero), 
-	.opcode_inex(opcode_inex), 
 	.overflow(overflow), 
 	.mult_ctrl(mult_ctrl), 
 	.div_ctrl(div_ctrl), 
