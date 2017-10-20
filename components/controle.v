@@ -149,7 +149,8 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
         alu_srca <= 2'b00;
         alu_srcb <= 2'b00;
         alu_op <= 3'b000;
-        pc_src <= 3'b000;
+        pc_src <= 3'b001;
+
         pc_write <= 1'b0;
         mult_ctrl <= 1'b0;
         div_ctrl <= 1'b0;
@@ -216,7 +217,8 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
           alu_srca <= 2'b00;
           alu_srcb <= 2'b00;
           alu_op <= 3'b000;
-          pc_src <= 3'b000;
+          pc_src <= 3'b001;
+
           pc_write <= 1'b0;
           mult_ctrl <= 1'b0;
           div_ctrl <= 1'b0;
@@ -400,7 +402,8 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
           alu_srca <= 2'b00;
           alu_srcb <= 2'b00;
           alu_op <= 3'b000;
-          pc_src <= 3'b000;
+          pc_src <= 3'b001;
+
           pc_write <= 1'b0;
           mult_ctrl <= 1'b0;
           div_ctrl <= 1'b0;
@@ -431,7 +434,8 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
           alu_srca <= 2'b00;
           alu_srcb <= 2'b00;
           alu_op <= 3'b000;
-          pc_src <= 3'b000;
+          pc_src <= 3'b001;
+
           pc_write <= 1'b0;
           mult_ctrl <= 1'b0;
           div_ctrl <= 1'b0;
@@ -463,7 +467,8 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
           alu_srca <= 2'b00;
           alu_srcb <= 2'b00;
           alu_op <= 3'b000;
-          pc_src <= 3'b000;
+          pc_src <= 3'b001;
+
           pc_write <= 1'b0;
           mult_ctrl <= 1'b0;
           div_ctrl <= 1'b0;
@@ -494,7 +499,8 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
           alu_srca <= 2'b00;
           alu_srcb <= 2'b00;
           alu_op <= 3'b000;
-          pc_src <= 3'b000;
+          pc_src <= 3'b001;
+
           pc_write <= 1'b0;
           mult_ctrl <= 1'b0;
           div_ctrl <= 1'b0;
@@ -525,7 +531,8 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
           alu_srca <= 2'b00;
           alu_srcb <= 2'b00;
           alu_op <= 3'b000;
-          pc_src <= 3'b000;
+          pc_src <= 3'b001;
+
           pc_write <= 1'b0;
           mult_ctrl <= 1'b0;
           div_ctrl <= 1'b0;
@@ -562,7 +569,8 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
           alu_srca <= 2'b00;
           alu_srcb <= 2'b00;
           alu_op <= 3'b000;
-          pc_src <= 3'b000;
+          pc_src <= 3'b001;
+
           pc_write <= 1'b0;
           mult_ctrl <= 1'b0;
           div_ctrl <= 1'b0;
@@ -592,7 +600,8 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
           alu_srca <= 2'b00;
           alu_srcb <= 2'b00;
           alu_op <= 3'b000;
-          pc_src <= 3'b000;
+          pc_src <= 3'b001;
+
           pc_write <= 1'b0;
           mult_ctrl <= 1'b0;
           div_ctrl <= 1'b0;
@@ -629,7 +638,8 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
           alu_srca <= 2'b00;
           alu_srcb <= 2'b00;
           alu_op <= 3'b000;
-          pc_src <= 3'b000;
+          pc_src <= 3'b001;
+
           pc_write <= 1'b0;
           mult_ctrl <= 1'b0;
           div_ctrl <= 1'b0;
@@ -659,7 +669,8 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
           alu_srca <= 2'b00;
           alu_srcb <= 2'b00;
           alu_op <= 3'b000;
-          pc_src <= 3'b000;
+          pc_src <= 3'b001;
+
           pc_write <= 1'b0;
           mult_ctrl <= 1'b0;
           div_ctrl <= 1'b0;
@@ -690,7 +701,8 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
           alu_srca <= 2'b00;
           alu_srcb <= 2'b00;
           alu_op <= 3'b000;
-          pc_src <= 3'b000;
+          pc_src <= 3'b001;
+
           pc_write <= 1'b0;
           mult_ctrl <= 1'b0;
           div_ctrl <= 1'b0;
@@ -720,7 +732,8 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
           alu_srca <= 2'b00;
           alu_srcb <= 2'b00;
           alu_op <= 3'b000;
-          pc_src <= 3'b000;
+          pc_src <= 3'b001;
+
           pc_write <= 1'b0;
           mult_ctrl <= 1'b0;
           div_ctrl <= 1'b0;
@@ -750,7 +763,8 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
           alu_srca <= 2'b00;
           alu_srcb <= 2'b00;
           alu_op <= 3'b000;
-          pc_src <= 3'b000;
+          pc_src <= 3'b001;
+
           pc_write <= 1'b0;
           mult_ctrl <= 1'b0;
           div_ctrl <= 1'b0;
@@ -783,7 +797,8 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
           alu_srca <= 2'b00;
           alu_srcb <= 2'b00;
           alu_op <= 3'b000;
-          pc_src <= 3'b000;
+          pc_src <= 3'b001;
+
           pc_write <= 1'b0;
           mult_ctrl <= 1'b0;
           div_ctrl <= 1'b0;
@@ -813,7 +828,8 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
           alu_srca <= 2'b00;
           alu_srcb <= 2'b00;
           alu_op <= 3'b000;
-          pc_src <= 3'b000;
+          pc_src <= 3'b001;
+
           pc_write <= 1'b0;
           mult_ctrl <= 1'b0;
           div_ctrl <= 1'b0;
@@ -1062,7 +1078,8 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
           alu_srca <= 2'b00;
           alu_srcb <= 2'b00;
           alu_op <= 3'b000;
-          pc_src <= 3'b000;
+          pc_src <= 3'b001;
+
           pc_write <= 1'b0;
           mult_ctrl <= 1'b0;
           div_ctrl <= 1'b0;
@@ -1093,7 +1110,8 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
           alu_srca <= 2'b00;
           alu_srcb <= 2'b00;
           alu_op <= 3'b000;
-          pc_src <= 3'b000;
+          pc_src <= 3'b001;
+
           pc_write <= 1'b0;
           mult_ctrl <= 1'b0;
           div_ctrl <= 1'b0;
@@ -1124,7 +1142,8 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
           alu_srca <= 2'b00;
           alu_srcb <= 2'b00;
           alu_op <= 3'b000;
-          pc_src <= 3'b000;
+          pc_src <= 3'b001;
+
           pc_write <= 1'b0;
           mult_ctrl <= 1'b0;
           div_ctrl <= 1'b0;
@@ -1155,7 +1174,8 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
           alu_srca <= 2'b00;
           alu_srcb <= 2'b00;
           alu_op <= 3'b000;
-          pc_src <= 3'b000;
+          pc_src <= 3'b001;
+
           pc_write <= 1'b0;
           mult_ctrl <= 1'b0;
           div_ctrl <= 1'b0;
@@ -1186,7 +1206,8 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
           alu_srca <= 2'b00;
           alu_srcb <= 2'b00;
           alu_op <= 3'b000;
-          pc_src <= 3'b000;
+          pc_src <= 3'b001;
+
           pc_write <= 1'b0;
           mult_ctrl <= 1'b0;
           div_ctrl <= 1'b0;
@@ -1217,7 +1238,8 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
           alu_srca <= 2'b00;
           alu_srcb <= 2'b00;
           alu_op <= 3'b000;
-          pc_src <= 3'b000;
+          pc_src <= 3'b001;
+
           pc_write <= 1'b0;
           mult_ctrl <= 1'b0;
           div_ctrl <= 1'b0;
@@ -1248,7 +1270,8 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
           alu_srca <= 2'b00;
           alu_srcb <= 2'b00;
           alu_op <= 3'b000;
-          pc_src <= 3'b000;
+          pc_src <= 3'b001;
+
           pc_write <= 1'b0;
           mult_ctrl <= 1'b0;
           div_ctrl <= 1'b0;
@@ -1282,7 +1305,8 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
           alu_srca <= 2'b00;
           alu_srcb <= 2'b00;
           alu_op <= 3'b000;
-          pc_src <= 3'b000;
+          pc_src <= 3'b001;
+
           pc_write <= 1'b0;
           mult_ctrl <= 1'b0;
           div_ctrl <= 1'b0;
@@ -1316,7 +1340,8 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
           alu_srca <= 2'b00;
           alu_srcb <= 2'b00;
           alu_op <= 3'b000;
-          pc_src <= 3'b000;
+          pc_src <= 3'b001;
+
           pc_write <= 1'b0;
           mult_ctrl <= 1'b0;
           div_ctrl <= 1'b0;
@@ -1350,7 +1375,8 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
           alu_srca <= 2'b00;
           alu_srcb <= 2'b00;
           alu_op <= 3'b000;
-          pc_src <= 3'b000;
+          pc_src <= 3'b001;
+
           pc_write <= 1'b0;
           mult_ctrl <= 1'b0;
           div_ctrl <= 1'b0;
@@ -1384,7 +1410,8 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
           alu_srca <= 2'b00;
           alu_srcb <= 2'b00;
           alu_op <= 3'b000;
-          pc_src <= 3'b000;
+          pc_src <= 3'b001;
+
           pc_write <= 1'b0;
           mult_ctrl <= 1'b0;
           div_ctrl <= 1'b0;
@@ -1419,7 +1446,8 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
           alu_srca <= 2'b00;
           alu_srcb <= 2'b00;
           alu_op <= 3'b000;
-          pc_src <= 3'b000;
+          pc_src <= 3'b001;
+
           pc_write <= 1'b0;
           mult_ctrl <= 1'b0;
           div_ctrl <= 1'b0;
@@ -1453,7 +1481,8 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
           alu_srca <= 2'b00;
           alu_srcb <= 2'b00;
           alu_op <= 3'b000;
-          pc_src <= 3'b000;
+          pc_src <= 3'b001;
+
           pc_write <= 1'b0;
           mult_ctrl <= 1'b0;
           div_ctrl <= 1'b0;
@@ -1484,7 +1513,8 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
           alu_srca <= 2'b00;
           alu_srcb <= 2'b00;
           alu_op <= 3'b000;
-          pc_src <= 3'b000;
+          pc_src <= 3'b001;
+
           pc_write <= 1'b0;
           mult_ctrl <= 1'b0;
           div_ctrl <= 1'b0;
@@ -1515,7 +1545,8 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
           alu_srca <= 2'b00;
           alu_srcb <= 2'b00;
           alu_op <= 3'b000;
-          pc_src <= 3'b000;
+          pc_src <= 3'b001;
+
           pc_write <= 1'b0;
           mult_ctrl <= 1'b0;
           div_ctrl <= 1'b0;
@@ -1550,7 +1581,8 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
           alu_srca <= 2'b00;
           alu_srcb <= 2'b00;
           alu_op <= 3'b000;
-          pc_src <= 3'b000;
+          pc_src <= 3'b001;
+
           pc_write <= 1'b0;
           mult_ctrl <= 1'b0;
           div_ctrl <= 1'b0;
@@ -1581,7 +1613,8 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
           alu_srca <= 2'b00;
           alu_srcb <= 2'b00;
           alu_op <= 3'b000;
-          pc_src <= 3'b000;
+          pc_src <= 3'b001;
+
           pc_write <= 1'b0;
           mult_ctrl <= 1'b0;
           div_ctrl <= 1'b0;
@@ -1612,7 +1645,8 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
           alu_srca <= 2'b00;
           alu_srcb <= 2'b00;
           alu_op <= 3'b000;
-          pc_src <= 3'b000;
+          pc_src <= 3'b001;
+
           pc_write <= 1'b0;
           mult_ctrl <= 1'b0;
           div_ctrl <= 1'b0;
@@ -1643,7 +1677,8 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
           alu_srca <= 2'b00;
           alu_srcb <= 2'b00;
           alu_op <= 3'b000;
-          pc_src <= 3'b000;
+          pc_src <= 3'b001;
+
           pc_write <= 1'b0;
           mult_ctrl <= 1'b0;
           div_ctrl <= 1'b0;
@@ -1842,7 +1877,8 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
           alu_srca <= 2'b00;
           alu_srcb <= 2'b00;
           alu_op <= 3'b000;
-          pc_src <= 3'b000;
+          pc_src <= 3'b001;
+
           pc_write <= 1'b0;
           mult_ctrl <= 1'b0;
           div_ctrl <= 1'b0;
@@ -1876,7 +1912,8 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
           alu_srca <= 2'b00;
           alu_srcb <= 2'b00;
           alu_op <= 3'b000;
-          pc_src <= 3'b000;
+          pc_src <= 3'b001;
+
           pc_write <= 1'b0;
           mult_ctrl <= 1'b0;
           div_ctrl <= 1'b0;
@@ -1906,7 +1943,8 @@ module controle (state, clock, reset, div_zero, overflow, mult_ctrl, div_ctrl, i
           alu_srca <= 2'b00;
           alu_srcb <= 2'b00;
           alu_op <= 3'b000;
-          pc_src <= 3'b000;
+          pc_src <= 3'b001;
+
           pc_write <= 1'b0;
           mult_ctrl <= 1'b0;
           div_ctrl <= 1'b0;
