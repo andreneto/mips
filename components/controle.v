@@ -1100,34 +1100,6 @@ module controle (next_state, clock, reset, div_zero, overflow, mult_ctrl, div_ct
           alu_srca <= 2'b01;
           alu_srcb <= 2'b00;
           alu_op <= 3'b111;
-          next_state <= SLT_2;
-        end
-
-        SLT_2: begin
-          iord <= 1'b0;
-          write_mem <= 1'b0;
-          ir_write <= 1'b0;
-          alu_srca <= 2'b0;
-          alu_srcb <= 2'b0;
-          alu_op <= 3'b0;
-          pc_src <= 3'b0;
-          pc_write <= 1'b0;
-          mult_ctrl <= 1'b0;
-          div_ctrl <= 1'b0;
-          reg_write <= 1'b0;
-          epc_write <= 1'b0;
-          pc_write_cond <= 1'b0;
-          hi_ctrl <= 1'b0;
-          lo_ctrl <= 1'b0;
-          load_type <= 2'b0;
-          store_type <= 2'b0;
-          branch_type <= 2'b0;
-          reg_dst <= 3'b0;
-          mem_to_reg <= 4'b0;
-          shift_srca <= 2'b0;
-          shift_srcb <= 2'b0;
-          shift <= 3'b0;
-
           mem_to_reg <= 4'b0011;
           reg_dst <= 3'b01;
           reg_write <= 1'b1;
