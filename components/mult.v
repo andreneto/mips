@@ -64,6 +64,9 @@ always @(posedge clk) begin
 					P <= P + (SUB<<N);
 				end
 			end
+			else begin
+				{hi,lo} <= P;
+			end
 			do_mult <= 1'b0;
 			diff_bit <= 1'b0;
 			mult_end <= 1'b1;
