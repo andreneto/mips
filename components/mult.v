@@ -74,6 +74,9 @@ always @(posedge clk) begin
 		end
 		
 	end
+	else begin
+		mult_end <= 1'b0;
+	end
 
 end
 

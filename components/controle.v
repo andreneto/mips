@@ -656,6 +656,7 @@ module controle (next_state, clock, reset, div_zero, overflow, mult_ctrl, div_ct
         end
 
         MULT_WAIT: begin
+          mult_ctrl <= 1'b0;
           if (mult_end == 1'b1) begin
             next_state <= MULT_END;
           end else begin
