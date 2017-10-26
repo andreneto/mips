@@ -1,4 +1,4 @@
-module cpu(out_IR_15_0,out_SignExtend16to32, clk, rst, next_state, out_PCSrc, out_PC, out_Mem, out_AluSrcA, out_AluSrcB, out_ALU, div_zero, overflow, mult_ctrl, div_ctrl, ir_write, reg_write, write_mem, epc_write, pc_write, pc_write_cond, hi_ctrl, lo_ctrl, mult_end, div_end, alu_srca, alu_srcb, branch_type, shift_srca, shift_srcb, store_type, load_type, out_IR_31_26 );
+module cpu(out_RegDst, out_MemToReg,out_LO,out_HILOWrite, outA_RegBank, outB_RegBank, outHi_Mult, outLo_Mult, out_IR_15_0, clk, rst, next_state, out_PC, out_Mem, out_ALU, div_zero, overflow, mult_ctrl, div_ctrl, ir_write, reg_write, write_mem, epc_write, pc_write, pc_write_cond, hi_ctrl, lo_ctrl, mult_end, div_end, alu_srca, alu_srcb, branch_type, shift_srca, shift_srcb, store_type, load_type, out_IR_31_26 );
 input wire clk, rst;
 
 
@@ -30,7 +30,7 @@ wire [5:0] out_IR_5_0; // funct
 
 // Fios de 1 bit
 wire outZero_ALU, outGT_ALU, outLT_ALU, outET_ALU, outOVF_ALU,
-out_BranchType;
+out_BranchType, out_HILOWrite;
 
 //Fio de 5 bits
 wire [4:0] out_RegDst, out_ShiftSrcB;
@@ -64,10 +64,12 @@ parameter NULL = 0;
 
 output wire [5:0] next_state;
 
-output wire [31:0] out_PCSrc, out_PC, out_Mem, out_AluSrcA, out_AluSrcB, out_ALU, out_SignExtend16to32;
-output wire div_zero, overflow, mult_ctrl, div_ctrl, ir_write, reg_write, write_mem, epc_write, pc_write, pc_write_cond, hi_ctrl, lo_ctrl, mult_end, div_end;
+// output wire [31:0] outA_RegBank, outB_RegBank, out_PCSrc, out_PC, out_Mem, out_AluSrcA, out_AluSrcB, out_ALU, out_SignExtend16to32;
+output wire [31:0] out_MemToReg,out_LO, outA_RegBank, outB_RegBank, outHi_Mult, outLo_Mult, out_PC, out_Mem, out_ALU;
+output wire out_HILOWrite, div_zero, overflow, mult_ctrl, div_ctrl, ir_write, reg_write, write_mem, epc_write, pc_write, pc_write_cond, hi_ctrl, lo_ctrl, mult_end, div_end;
 output wire [1:0] alu_srca, alu_srcb, branch_type, shift_srca, shift_srcb, store_type, load_type;
 output wire [5:0] out_IR_31_26;
+output wire [4:0] out_RegDst;
 output wire [15:0] out_IR_15_0;
 
 
@@ -144,6 +146,7 @@ mult Mult(.clk(clk), .rst(rst), .mult_start(mult_ctrl), .mult_end(mult_end), .A(
 div Div(.clk(clk), .rst(rst), .div_start(div_ctrl), .dividend(outA_RegBank), .divisor(outB_RegBank), .div_end(div_end), .hi(outHi_Div), .lo(outLo_Div), .div_by_zero(div_zero));
 mux2 HICtrl(.in_0(outHi_Mult), .in_1(outHi_Div), .control(hi_ctrl), .out(out_HICtrl));
 mux2 LOCtrl(.in_0(outLo_Mult), .in_1(outLo_Div), .control(lo_ctrl), .out(out_LOCtrl));
-Registrador HI( .clk(clk), .reset(rst), .load(clk), .entrada(out_HICtrl), .saida(out_HI));
-Registrador LO( .clk(clk), .reset(rst), .load(clk), .entrada(out_LOCtrl), .saida(out_LO));
+or HILOWrite(out_HILOWrite, mult_end, div_end);
+Registrador HI( .clk(clk), .reset(rst), .load(out_HILOWrite), .entrada(out_HICtrl), .saida(out_HI));
+Registrador LO( .clk(clk), .reset(rst), .load(out_HILOWrite), .entrada(out_LOCtrl), .saida(out_LO));
 endmodule

@@ -47,14 +47,16 @@ set_global_assignment -name USE_GENERATED_PHYSICAL_CONSTRAINTS OFF -section_id e
 set_global_assignment -name LL_ROOT_REGION ON -entity mips -section_id "Root Region"
 set_global_assignment -name LL_MEMBER_STATE LOCKED -entity mips -section_id "Root Region"
 set_global_assignment -name SIMULATION_MODE FUNCTIONAL
-set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
-set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
-set_global_assignment -name LL_ROOT_REGION ON -section_id "Root Region"
-set_global_assignment -name LL_MEMBER_STATE LOCKED -section_id "Root Region"
+set_global_assignment -name END_TIME "10 us"
 set_global_assignment -name MIF_FILE components/instrucoes.mif
 set_global_assignment -name VERILOG_FILE components/Load.v
 set_global_assignment -name VERILOG_FILE components/Store.v
 set_global_assignment -name VERILOG_FILE components/controle.v
+set_global_assignment -name VECTOR_WAVEFORM_FILE waveforms/mult.vwf
+set_global_assignment -name VECTOR_WAVEFORM_FILE waveforms/mux2.vwf
+set_global_assignment -name VECTOR_WAVEFORM_FILE waveforms/mux4.vwf
+set_global_assignment -name VECTOR_WAVEFORM_FILE waveforms/mux8.vwf
+set_global_assignment -name VECTOR_WAVEFORM_FILE waveforms/signextend16to32negative.vwf
 set_global_assignment -name VERILOG_FILE components/Extend1to32.v
 set_global_assignment -name VERILOG_FILE components/Extend8to32.v
 set_global_assignment -name VERILOG_FILE components/ShiftLeft2.v
@@ -79,6 +81,9 @@ set_global_assignment -name VECTOR_WAVEFORM_FILE components/controle.vwf
 set_global_assignment -name VECTOR_WAVEFORM_FILE waveforms/load.vwf
 set_global_assignment -name VECTOR_WAVEFORM_FILE waveforms/controle.vwf
 set_global_assignment -name VECTOR_WAVEFORM_FILE waveforms/cpu.vwf
-set_global_assignment -name END_TIME "10 us"
+set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
+set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
+set_global_assignment -name LL_ROOT_REGION ON -section_id "Root Region"
+set_global_assignment -name LL_MEMBER_STATE LOCKED -section_id "Root Region"
 set_global_assignment -name INCREMENTAL_VECTOR_INPUT_SOURCE waveforms/cpu.vwf
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
