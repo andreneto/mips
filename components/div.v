@@ -67,6 +67,9 @@ always @(posedge clk) begin
 		end
 		
 	end
+	else begin
+		div_end <= 1'b0;
+	end
 	
 end
 
