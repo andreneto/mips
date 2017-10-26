@@ -587,6 +587,9 @@ module controle (next_state, clock, reset, div_zero, overflow, mult_ctrl, div_ct
         end
 
         DIV_WAIT: begin
+          div_ctrl <= 1'b0;
+          hi_ctrl <= 1'b1;
+          lo_ctrl <= 1'b1;
           if (div_end == 1'b1) begin
             next_state <= DIV_END;
           end else begin
@@ -657,6 +660,8 @@ module controle (next_state, clock, reset, div_zero, overflow, mult_ctrl, div_ct
 
         MULT_WAIT: begin
           mult_ctrl <= 1'b0;
+          hi_ctrl <= 1'b0;
+          lo_ctrl <= 1'b0;
           if (mult_end == 1'b1) begin
             next_state <= MULT_END;
           end else begin
@@ -755,6 +760,7 @@ module controle (next_state, clock, reset, div_zero, overflow, mult_ctrl, div_ct
 
           reg_dst <= 3'b001;
           mem_to_reg <= 4'b0101;
+          reg_write <= 1'b1;
           next_state <= FETCH;
         end
 
