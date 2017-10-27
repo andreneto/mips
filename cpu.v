@@ -1,4 +1,4 @@
-module cpu(out_RegDst, out_MemToReg,out_LO,out_HILOWrite, outA_RegBank, outB_RegBank, outHi_Mult, outLo_Mult, out_IR_15_0, clk, rst, next_state, out_PC, out_Mem, out_ALU, div_zero, overflow, mult_ctrl, div_ctrl, ir_write, reg_write, write_mem, epc_write, pc_write, pc_write_cond, hi_ctrl, lo_ctrl, mult_end, div_end, alu_srca, alu_srcb, branch_type, shift_srca, shift_srcb, store_type, load_type, out_IR_31_26 );
+module cpu(out_RegDst,out_MDR, out_MemToReg,out_LO,out_HILOWrite, outA_RegBank, outB_RegBank, out_IR_15_0, clk, rst, next_state, out_PC, out_Mem, out_ALU, div_zero, overflow, mult_ctrl, div_ctrl, ir_write, reg_write, write_mem, epc_write, pc_write, pc_write_cond, hi_ctrl, lo_ctrl, mult_end, div_end, alu_srca, alu_srcb, branch_type, shift_srca, shift_srcb, store_type, load_type, out_IR_31_26 );
 input wire clk, rst;
 
 
@@ -65,7 +65,7 @@ parameter NULL = 0;
 output wire [5:0] next_state;
 
 // output wire [31:0] outA_RegBank, outB_RegBank, out_PCSrc, out_PC, out_Mem, out_AluSrcA, out_AluSrcB, out_ALU, out_SignExtend16to32;
-output wire [31:0] out_MemToReg,out_LO, outA_RegBank, outB_RegBank, outHi_Mult, outLo_Mult, out_PC, out_Mem, out_ALU;
+output wire [31:0] out_MemToReg,out_LO, outA_RegBank, outB_RegBank, out_PC, out_Mem, out_ALU, out_MDR;
 output wire out_HILOWrite, div_zero, overflow, mult_ctrl, div_ctrl, ir_write, reg_write, write_mem, epc_write, pc_write, pc_write_cond, hi_ctrl, lo_ctrl, mult_end, div_end;
 output wire [1:0] alu_srca, alu_srcb, branch_type, shift_srca, shift_srcb, store_type, load_type;
 output wire [5:0] out_IR_31_26;
@@ -122,7 +122,7 @@ Registrador MDR( .clk(clk), .reset(rst), .load(clk), .entrada(out_LoadMem), .sai
 Instr_Reg IR(.clk(clk), .reset(rst), .load_ir(ir_write), .entrada(out_Mem), .instr31_26(out_IR_31_26), .instr25_21(out_IR_25_21), .instr20_16(out_IR_20_16), .instr15_0(out_IR_15_0));
 mux8 RegDst(.in_0(out_IR_20_16), .in_1(out_IR_15_0[15:11]), .in_2(REG_31), .in_3(REG_30), .in_4(REG_29), .in_5(0), .in_6(0), .in_7(0), .control(reg_dst), .out(out_RegDst));
 Banco_reg RegBank(.clk(clk), .reset(rst), .regWrite(reg_write), .readReg1(out_IR_25_21), .readReg2(out_IR_20_16), .writeReg(out_RegDst), .writeData(out_MemToReg), .readData1(outA_RegBank), .readData2(outB_RegBank));
-//Extend26to28 JumpAddress(.in(), .out(out_JumpAddress));
+Extend26to28 JumpAddress(.in({ out_IR_25_21, out_IR_20_16, out_IR_15_0 }), .out(out_JumpAddress));
 mux4 AluSrcA(.in_0(out_PC), .in_1(outA_RegBank), .in_2(out_MDR), .in_3(0), .control(alu_srca), .out(out_AluSrcA));
 mux4 AluSrcB(.in_0(outB_RegBank), .in_1(32'd4), .in_2(out_SignExtend16to32), .in_3(out_BranchAddress), .control(alu_srcb), .out(out_AluSrcB));
 SignExtend16to32 ExtendImediate(.in(out_IR_15_0), .out(out_SignExtend16to32));
@@ -131,7 +131,7 @@ Ula32 ALU(.a(out_AluSrcA), .b(out_AluSrcB), .seletor(alu_op), .s(out_ALU), .over
 Extend1to32 SetLessThanBit( .in(outLT_ALU), .out(out_SetLessThanBit));
 Registrador ALUout( .clk(clk), .reset(rst), .load(alu_out_write), .entrada(out_ALU), .saida(out_ALUout));
 Registrador EPC( .clk(clk), .reset(rst), .load(epc_write), .entrada(out_ALU), .saida(out_EPC));
-mux8 PCSrc(.in_0(out_Extend8to32), .in_1(out_ALU), .in_2(out_EPC), .in_3(out_ALUout), .in_4(outA_RegBank), .in_5(out_JumpAddress), .in_6(0), .in_7(0), .control(pc_src), .out(out_PCSrc));
+mux8 PCSrc(.in_0(out_Extend8to32), .in_1(out_ALU), .in_2(out_EPC), .in_3(out_ALUout), .in_4(outA_RegBank), .in_5({out_PC[31:28], out_JumpAddress}), .in_6(0), .in_7(0), .control(pc_src), .out(out_PCSrc));
 
 not NotEqual(out_NotEqual, outZero_ALU);
 or LessOrEqual(out_LessOrEqual, outLT_ALU, outET_ALU);

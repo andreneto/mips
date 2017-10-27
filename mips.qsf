@@ -48,6 +48,12 @@ set_global_assignment -name LL_ROOT_REGION ON -entity mips -section_id "Root Reg
 set_global_assignment -name LL_MEMBER_STATE LOCKED -entity mips -section_id "Root Region"
 set_global_assignment -name SIMULATION_MODE FUNCTIONAL
 set_global_assignment -name END_TIME "10 us"
+set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
+set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
+set_global_assignment -name LL_ROOT_REGION ON -section_id "Root Region"
+set_global_assignment -name LL_MEMBER_STATE LOCKED -section_id "Root Region"
+set_global_assignment -name INCREMENTAL_VECTOR_INPUT_SOURCE waveforms/cpu.vwf
+set_global_assignment -name VERILOG_FILE components/Extend26to28.v
 set_global_assignment -name MIF_FILE components/instrucoes.mif
 set_global_assignment -name VERILOG_FILE components/Load.v
 set_global_assignment -name VERILOG_FILE components/Store.v
@@ -81,11 +87,6 @@ set_global_assignment -name VECTOR_WAVEFORM_FILE components/controle.vwf
 set_global_assignment -name VECTOR_WAVEFORM_FILE waveforms/load.vwf
 set_global_assignment -name VECTOR_WAVEFORM_FILE waveforms/controle.vwf
 set_global_assignment -name VECTOR_WAVEFORM_FILE waveforms/cpu.vwf
-set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
-set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
-set_global_assignment -name LL_ROOT_REGION ON -section_id "Root Region"
-set_global_assignment -name LL_MEMBER_STATE LOCKED -section_id "Root Region"
-set_global_assignment -name INCREMENTAL_VECTOR_INPUT_SOURCE waveforms/cpu.vwf
 set_global_assignment -name ZIP_VECTOR_WAVEFORM_FILE ../resultados/slt.cvwf
 set_global_assignment -name ZIP_VECTOR_WAVEFORM_FILE ../resultados/sra.cvwf
 set_global_assignment -name ZIP_VECTOR_WAVEFORM_FILE ../resultados/srav.cvwf
@@ -95,4 +96,7 @@ set_global_assignment -name ZIP_VECTOR_WAVEFORM_FILE ../resultados/ble.cvwf
 set_global_assignment -name ZIP_VECTOR_WAVEFORM_FILE ../resultados/bne.cvwf
 set_global_assignment -name ZIP_VECTOR_WAVEFORM_FILE ../resultados/bgt.cvwf
 set_global_assignment -name ZIP_VECTOR_WAVEFORM_FILE ../resultados/beqm.cvwf
+set_global_assignment -name ZIP_VECTOR_WAVEFORM_FILE ../resultados/lb.cvwf
+set_global_assignment -name ZIP_VECTOR_WAVEFORM_FILE ../resultados/slti.cvwf
+set_global_assignment -name ZIP_VECTOR_WAVEFORM_FILE ../resultados/j.cvwf
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
