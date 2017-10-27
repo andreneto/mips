@@ -107,6 +107,7 @@ module controle (next_state, clock, reset, div_zero, overflow, mult_ctrl, div_ct
   parameter LOAD_STORE_INIT = 6'h3B;
   parameter LOAD_BEFORE_STORE = 6'h3C;
   parameter LOAD_BEFORE_STORE_WAIT = 6'h3D;
+  parameter LUI_END = 6'h3E;
 
   //OPCODE
   parameter OPCODE_R = 6'h0;
@@ -367,11 +368,14 @@ module controle (next_state, clock, reset, div_zero, overflow, mult_ctrl, div_ct
             end
 
             OPCODE_LUI: begin
-              next_state <= LUI;
+              shift_srca <= 2'b10;
+              shift_srcb <= 2'b10;
+              shift <= 001;
+              next_state <= SHIFT_INIT;
             end
 
             OPCODE_SLTI: begin
-              next_state <= ADDI;
+              next_state <= SLTI;
             end
 
             OPCODE_BEQ: begin
@@ -887,28 +891,39 @@ module controle (next_state, clock, reset, div_zero, overflow, mult_ctrl, div_ct
         end
 
         SHIFT_INIT: begin
-          shift <= 001;
-          case (funct) 
-            FUNCT_SLL: begin
-              next_state <= SLL;
+          shift <= 3'b001;
+
+          case(opcode)
+            OPCODE_R: begin
+              case (funct) 
+                FUNCT_SLL: begin
+                  next_state <= SLL;
+                end
+
+                FUNCT_SLLV: begin
+                  next_state <= SLLV;
+                end
+
+                FUNCT_SRA: begin
+                  next_state <= SRA;
+                end
+
+                FUNCT_SRAV: begin
+                  next_state <= SRAV;
+                end
+
+                FUNCT_SRL: begin
+                  next_state <= SRL;
+                end
+              endcase 
             end
 
-            FUNCT_SLLV: begin
-              next_state <= SLLV;
+            OPCODE_LUI:begin
+              next_state <= LUI;
             end
 
-            FUNCT_SRA: begin
-              next_state <= SRA;
-            end
-
-            FUNCT_SRAV: begin
-              next_state <= SRAV;
-            end
-
-            FUNCT_SRL: begin
-              next_state <= SRL;
-            end
           endcase
+          
         end
 
         SLL: begin
@@ -1240,7 +1255,40 @@ module controle (next_state, clock, reset, div_zero, overflow, mult_ctrl, div_ct
           shift_srca <= 2'b10;
           shift_srcb <= 2'b10;
           shift <= 3'b010;
-          next_state <= IMEDIATE_END;
+          next_state <= LUI_END;
+        end
+
+        LUI_END: begin
+          iord <= 1'b0;
+          write_mem <= 1'b0;
+          ir_write <= 1'b0;
+          alu_srca <= 2'b00;
+          alu_srcb <= 2'b00;
+          alu_op <= 3'b000;
+          pc_src <= 3'b001;
+
+          pc_write <= 1'b0;
+          mult_ctrl <= 1'b0;
+          div_ctrl <= 1'b0;
+          reg_write <= 1'b0;
+          epc_write <= 1'b0;
+          pc_write_cond <= 1'b0;
+          hi_ctrl <= 1'b0;
+          lo_ctrl <= 1'b0;
+          load_type <= 2'b00;
+          store_type <= 2'b00;
+          branch_type <= 2'b00;
+          shift_srca <= 2'b00;
+          shift_srcb <= 2'b00;
+          reg_dst <= 3'b000;
+          shift <= 3'b000;
+          mem_to_reg <= 4'b0000;
+          alu_out_write <=1'b0;
+
+          mem_to_reg <= 4'b1010;
+          reg_dst <= 3'b000;
+          reg_write <= 1'b1;
+          next_state <= FETCH;
         end
 
         IMEDIATE_END: begin
@@ -1307,41 +1355,44 @@ module controle (next_state, clock, reset, div_zero, overflow, mult_ctrl, div_ct
           alu_srcb <= 2'b10;
           alu_op <= 3'b111;
           alu_out_write <=1'b1;
-          next_state <= SLTI_2;
-        end
-
-        SLTI_2: begin
-          iord <= 1'b0;
-          write_mem <= 1'b0;
-          ir_write <= 1'b0;
-          alu_srca <= 2'b00;
-          alu_srcb <= 2'b00;
-          alu_op <= 3'b000;
-          pc_src <= 3'b001;
-
-          pc_write <= 1'b0;
-          mult_ctrl <= 1'b0;
-          div_ctrl <= 1'b0;
-          reg_write <= 1'b0;
-          epc_write <= 1'b0;
-          pc_write_cond <= 1'b0;
-          hi_ctrl <= 1'b0;
-          lo_ctrl <= 1'b0;
-          load_type <= 2'b00;
-          store_type <= 2'b00;
-          branch_type <= 2'b00;
-          shift_srca <= 2'b00;
-          shift_srcb <= 2'b00;
-          reg_dst <= 3'b000;
-          shift <= 3'b000;
-          mem_to_reg <= 4'b0000;
-          alu_out_write <=1'b0;
-
           mem_to_reg <= 4'b0011;
           reg_dst <= 3'b000;
           reg_write <= 1'b1;
           next_state <= FETCH;
         end
+
+        // SLTI_2: begin
+        //   iord <= 1'b0;
+        //   write_mem <= 1'b0;
+        //   ir_write <= 1'b0;
+        //   alu_srca <= 2'b00;
+        //   alu_srcb <= 2'b00;
+        //   alu_op <= 3'b000;
+        //   pc_src <= 3'b001;
+
+        //   pc_write <= 1'b0;
+        //   mult_ctrl <= 1'b0;
+        //   div_ctrl <= 1'b0;
+        //   reg_write <= 1'b0;
+        //   epc_write <= 1'b0;
+        //   pc_write_cond <= 1'b0;
+        //   hi_ctrl <= 1'b0;
+        //   lo_ctrl <= 1'b0;
+        //   load_type <= 2'b00;
+        //   store_type <= 2'b00;
+        //   branch_type <= 2'b00;
+        //   shift_srca <= 2'b00;
+        //   shift_srcb <= 2'b00;
+        //   reg_dst <= 3'b000;
+        //   shift <= 3'b000;
+        //   mem_to_reg <= 4'b0000;
+        //   alu_out_write <=1'b0;
+
+        //   mem_to_reg <= 4'b0011;
+        //   reg_dst <= 3'b000;
+        //   reg_write <= 1'b1;
+        //   next_state <= FETCH;
+        // end
 
         BEQ: begin
           iord <= 1'b0;
