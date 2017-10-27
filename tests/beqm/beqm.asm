@@ -1,7 +1,8 @@
 .data 
+a: .word 5
 .text
 
-addi $s0, $zero, 5
+addi $s0, $zero, a
 addi $s1, $zero, -6
 addi $s2, $zero, 5
 
