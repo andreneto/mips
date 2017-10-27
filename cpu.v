@@ -3,7 +3,7 @@ input wire clk, rst;
 
 
 //Sinais de 1 bit
-wire div_zero, overflow, mult_ctrl, div_ctrl, ir_write, reg_write, write_mem, epc_write, pc_write, pc_write_cond, hi_ctrl, lo_ctrl, mult_end, div_end;
+wire div_zero, overflow, mult_ctrl, div_ctrl, ir_write, reg_write, alu_out_write, write_mem, epc_write, pc_write, pc_write_cond, hi_ctrl, lo_ctrl, mult_end, div_end;
 
 //Sinais de 2 bits
 wire [1:0] alu_srca, alu_srcb, branch_type, shift_srca, shift_srcb, store_type, load_type;
@@ -86,6 +86,7 @@ controle (
 	.div_ctrl(div_ctrl), 
 	.ir_write(ir_write), 
 	.reg_write(reg_write), 
+	.alu_out_write(alu_out_write), 
 	.write_mem(write_mem), 
 	.epc_write(epc_write), 
 	.pc_write(pc_write), 
@@ -128,7 +129,7 @@ SignExtend16to32 ExtendImediate(.in(out_IR_15_0), .out(out_SignExtend16to32));
 ShiftLeft2 BranchAddress(.in(out_SignExtend16to32), .out(out_BranchAddress));
 Ula32 ALU(.a(out_AluSrcA), .b(out_AluSrcB), .seletor(alu_op), .s(out_ALU), .overflow(overflow), .negativo(0), .z(outZero_ALU), .igual(outET_ALU), .maior(outGT_ALU), .menor(outLT_ALU) );
 Extend1to32 SetLessThanBit( .in(outLT_ALU), .out(out_SetLessThanBit));
-Registrador ALUout( .clk(clk), .reset(rst), .load(clk), .entrada(out_ALU), .saida(out_ALUout));
+Registrador ALUout( .clk(clk), .reset(rst), .load(alu_out_write), .entrada(out_ALU), .saida(out_ALUout));
 Registrador EPC( .clk(clk), .reset(rst), .load(epc_write), .entrada(out_ALU), .saida(out_EPC));
 mux8 PCSrc(.in_0(out_Extend8to32), .in_1(out_ALU), .in_2(out_EPC), .in_3(out_ALUout), .in_4(outA_RegBank), .in_5(out_JumpAddress), .in_6(0), .in_7(0), .control(pc_src), .out(out_PCSrc));
 
