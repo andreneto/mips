@@ -39,6 +39,9 @@ module controle (next_state, clock, reset, div_zero, overflow, mult_ctrl, div_ct
   output reg [3:0] mem_to_reg;
 
   reg opcode_inex;
+
+  reg overflow_ctrl;
+  reg div_zero_ctrl;
   reg [5:0] wait_counter;
   output reg [5:0] next_state;
 
@@ -181,7 +184,9 @@ module controle (next_state, clock, reset, div_zero, overflow, mult_ctrl, div_ct
         reg_write <= 1'b1;
         next_state <= FETCH;
       end
-      else if (overflow == 1'b1 || div_zero == 1'b1) begin
+      else if (overflow_ctrl == 1'b0 && overflow == 1'b1 || div_zero_ctrl == 1'b0 && div_zero == 1'b1) begin
+        div_zero_ctrl <= div_zero;
+        overflow_ctrl <= overflow;
         next_state <= EXCEPTION;
       end 
       else begin
@@ -2071,13 +2076,14 @@ module controle (next_state, clock, reset, div_zero, overflow, mult_ctrl, div_ct
           alu_out_write <=1'b1;
 
           epc_write <= 1'b1;
-          if(overflow == 1'b1) begin
+
+          if(overflow_ctrl == 1'b1) begin
             next_state <= OVERFLOW;
           end
-          if (div_zero == 1'b1) begin
+          else if (div_zero_ctrl == 1'b1) begin
             next_state <= DIV_ZERO;
           end
-          if (opcode_inex == 1'b1) begin
+          else if (opcode_inex == 1'b1) begin
             next_state <= OPCODE_INEX;
           end
         end
@@ -2108,8 +2114,9 @@ module controle (next_state, clock, reset, div_zero, overflow, mult_ctrl, div_ct
           shift <= 3'b0;
           alu_out_write <=1'b0;
 
-          iord <= 3'b010;
+          iord <= 3'b011;
           write_mem <= 1'b0;
+          overflow_ctrl <= 1'b0;
           next_state <= EXCEPTION_WAIT;
         end
 
@@ -2139,7 +2146,9 @@ module controle (next_state, clock, reset, div_zero, overflow, mult_ctrl, div_ct
           shift <= 3'b0;
           alu_out_write <=1'b0;
 
-          iord <= 3'b011;
+          div_zero_ctrl <= 1'b0;
+
+          iord <= 3'b100;
           write_mem <= 1'b0;
           next_state <= EXCEPTION_WAIT;
         end
@@ -2171,8 +2180,10 @@ module controle (next_state, clock, reset, div_zero, overflow, mult_ctrl, div_ct
           mem_to_reg <= 4'b0;
           alu_out_write <=1'b0;
 
+          opcode_inex <= 1'b0;
 
-          iord <= 3'b100;
+
+          iord <= 3'b010;
           write_mem <= 1'b0;
           next_state <= EXCEPTION_WAIT;
         end

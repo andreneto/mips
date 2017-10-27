@@ -1,4 +1,4 @@
-module cpu(out_RegDst,out_MDR, out_MemToReg,out_LO,out_HILOWrite, outA_RegBank, outB_RegBank, out_IR_15_0, clk, rst, next_state, out_PC, out_Mem, out_ALU, div_zero, overflow, mult_ctrl, div_ctrl, ir_write, reg_write, write_mem, epc_write, pc_write, pc_write_cond, hi_ctrl, lo_ctrl, mult_end, div_end, alu_srca, alu_srcb, branch_type, shift_srca, shift_srcb, store_type, load_type, out_IR_31_26 );
+module cpu(out_RegDst, out_IorD, out_MemToReg,out_LO,out_HILOWrite, outA_RegBank, outB_RegBank, out_IR_15_0, clk, rst, next_state, out_PC, out_Mem, out_ALU, div_zero, overflow, mult_ctrl, div_ctrl, ir_write, reg_write, write_mem, epc_write, pc_write, pc_write_cond, hi_ctrl, lo_ctrl, mult_end, div_end, alu_srca, alu_srcb, branch_type, shift_srca, shift_srcb, store_type, load_type, out_IR_31_26 );
 input wire clk, rst;
 
 
@@ -65,7 +65,7 @@ parameter NULL = 0;
 output wire [5:0] next_state;
 
 // output wire [31:0] outA_RegBank, outB_RegBank, out_PCSrc, out_PC, out_Mem, out_AluSrcA, out_AluSrcB, out_ALU, out_SignExtend16to32;
-output wire [31:0] out_MemToReg,out_LO, outA_RegBank, outB_RegBank, out_PC, out_Mem, out_ALU, out_MDR;
+output wire [31:0] out_MemToReg,out_LO, outA_RegBank, outB_RegBank, out_PC, out_Mem, out_ALU, out_IorD;
 output wire out_HILOWrite, div_zero, overflow, mult_ctrl, div_ctrl, ir_write, reg_write, write_mem, epc_write, pc_write, pc_write_cond, hi_ctrl, lo_ctrl, mult_end, div_end;
 output wire [1:0] alu_srca, alu_srcb, branch_type, shift_srca, shift_srcb, store_type, load_type;
 output wire [5:0] out_IR_31_26;
@@ -114,7 +114,7 @@ controle (
 Registrador PC( .clk(clk), .reset(rst), .load(out_PCWrite), .entrada(out_PCSrc), .saida(out_PC));
 mux8 IorD(.in_0(out_PC), .in_1(outA_RegBank), .in_2(OPCODE_INEX_HANDLER), .in_3(OVERFLOW_HANDLER), .in_4(DIV_ZERO_HANDLER), .in_5(out_ALUout), .in_6(0), .in_7(0), .control(iord), .out(out_IorD));
 Memoria Mem(.address(out_IorD), .clock(clk), .wr(write_mem), .datain(out_StoreMem), .dataout(out_Mem));
-Extend8to32 ExceptionHandlerAddress(.in(out_Mem), .out(out_Extend8to32));
+Extend8to32 ExceptionHandlerAddress(.in(out_Mem[7:0]), .out(out_Extend8to32));
 Load LoadMem(.mem_data(out_Mem), .load_type(load_type), .out_data(out_LoadMem));
 Store StoreMem(.MemData(out_Mem), .B(outB_RegBank), .StoreType(store_type), .data(out_StoreMem));
 Registrador MDR( .clk(clk), .reset(rst), .load(clk), .entrada(out_LoadMem), .saida(out_MDR));
