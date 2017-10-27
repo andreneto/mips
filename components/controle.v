@@ -105,6 +105,8 @@ module controle (next_state, clock, reset, div_zero, overflow, mult_ctrl, div_ct
   parameter EXCEPTION_END = 6'h39;
   parameter SHIFT_INIT = 6'h3A;
   parameter LOAD_STORE_INIT = 6'h3B;
+  parameter LOAD_BEFORE_STORE = 6'h3C;
+  parameter LOAD_BEFORE_STORE_WAIT = 6'h3D;
 
   //OPCODE
   parameter OPCODE_R = 6'h0;
@@ -1613,13 +1615,13 @@ module controle (next_state, clock, reset, div_zero, overflow, mult_ctrl, div_ct
             end
 
             OPCODE_SB: begin
-              next_state <= SB;
+              next_state <= LOAD_BEFORE_STORE;
             end
             OPCODE_SH: begin
-              next_state <= SH;
+              next_state <= LOAD_BEFORE_STORE;
             end
             OPCODE_SW: begin
-              next_state <= SW;
+              next_state <= LOAD_BEFORE_STORE;
             end
 
           endcase
@@ -1765,6 +1767,56 @@ module controle (next_state, clock, reset, div_zero, overflow, mult_ctrl, div_ct
           reg_dst <= 3'b000;
           reg_write <= 1'b1;
           next_state <= FETCH;
+        end
+
+        LOAD_BEFORE_STORE: begin
+          iord <= 1'b0;
+          write_mem <= 1'b0;
+          ir_write <= 1'b0;
+          alu_srca <= 2'b00;
+          alu_srcb <= 2'b00;
+          alu_op <= 3'b000;
+          pc_src <= 3'b001;
+
+          pc_write <= 1'b0;
+          mult_ctrl <= 1'b0;
+          div_ctrl <= 1'b0;
+          reg_write <= 1'b0;
+          epc_write <= 1'b0;
+          pc_write_cond <= 1'b0;
+          hi_ctrl <= 1'b0;
+          lo_ctrl <= 1'b0;
+          load_type <= 2'b0;
+          store_type <= 2'b0;
+          branch_type <= 2'b0;
+          shift_srca <= 2'b0;
+          shift_srcb <= 2'b0;
+          reg_dst <= 3'b0;
+          shift <= 3'b0;
+          mem_to_reg <= 4'b0;
+          alu_out_write <=1'b0;
+
+          iord <= 3'b101;
+          write_mem <= 1'b0;
+          load_type <= 2'b10;
+          next_state <= LOAD_BEFORE_STORE_WAIT;
+          
+        end
+
+        LOAD_BEFORE_STORE_WAIT: begin
+
+          case(opcode)
+            OPCODE_SB: begin
+              next_state <= SB;
+            end
+            OPCODE_SH: begin
+              next_state <= SH;
+            end
+            OPCODE_SW: begin
+              next_state <= SW;
+            end
+          endcase
+
         end
 
         SB: begin
