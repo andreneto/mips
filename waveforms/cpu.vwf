@@ -32516,7 +32516,7 @@ DISPLAY_LINE
 {
 	CHANNEL = "rst";
 	EXPAND_STATUS = COLLAPSED;
-	RADIX = Hexadecimal;
+	RADIX = Binary;
 	TREE_INDEX = 1;
 	TREE_LEVEL = 0;
 }
